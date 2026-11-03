@@ -59,15 +59,17 @@ PEA ToolBox — TODO
   [ ] ชื่อสังกัดทางการในสไลด์ "การไฟฟ้าส่วนภูมิภาคอำเภอคำชะอี"
 
 [ขึ้นระบบจริง]
-  [ ] สร้าง Supabase project (org ฟรีเต็มอยู่ — ต้องลบตัวเก่าหรือใช้ Pro)
-  [ ] รัน supabase.sql + อัปโหลดรูป img/ (67 ไฟล์) + ใส่ URL/KEY ใน index.html
+  [x] Supabase project cgkdkbojhydwllkhyzms (3 พ.ย. — อีเมลใหม่ แพ็กเกจฟรี)
+  [x] รัน supabase.sql (cables 53 / standards 20 / docs 54) + รูป 67 ไฟล์ใน bucket assy + ใส่ URL/KEY แล้ว
+  [x] ห้องสมุดลิงก์ Google Drive ต่อ (ไม่ขึ้น bucket docs เพราะเกินโควตาฟรี)
   [ ] ห้องสมุด: ย้าย PDF ขึ้น Storage bucket "docs" (ชื่อไฟล์ <Drive id>.pdf)
       ⚠ ฟรีจำกัด 50 MB/ไฟล์ — 3 ไฟล์เกิน (143 / 76 / 57 MB) ต้องบีบอัดหรือใช้ Pro
   [ ] เผยแพร่เว็บ (GitHub Pages) ให้ทีมใช้
   [ ] keep-alive Supabase ฟรี (แบบ KceBudget) ถ้าใช้ org ฟรี
 
 [ฟีเจอร์ถัดไป (ไอเดีย)]
-  [ ] PWA เปิดได้ตอนไม่มีเน็ต
+  [x] PWA (3 พ.ย.) manifest.webmanifest + sw.js + icon-192/512.png · ออฟไลน์ใช้ข้อมูลที่ฝังในไฟล์
+      รูป Assy เก็บในเครื่องเมื่อเคยเปิดดู · แก้แอปแล้วถ้าอยากล้างแคชเก่า ให้เปลี่ยน C = 'pea-toolbox-v2' ใน sw.js
   [ ] ล็อกอิน → ดาวที่ติดไว้ตามไปทุกเครื่อง (ตอนนี้เก็บในเครื่อง localStorage)
   [ ] เครื่องคำนวณเพิ่ม: แรงดันตก, ขนาดสาย, PF/คาปาซิเตอร์, ระยะหย่อนสาย
   [ ] ข้อมูลชุดหัวเสาขึ้น Supabase (ตอนนี้อยู่ในไฟล์ HEADS)

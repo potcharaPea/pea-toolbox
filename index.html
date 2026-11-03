@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PEA ToolBox</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2374045F'/%3E%3Cpath d='M13 3 5 14h6l-1 7 8-11h-6z' fill='%23ffd23a'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#74045F">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -377,11 +380,11 @@ const calc = {
 <script>
 // ===== ข้อมูล (โครงเดียวกับตารางใน supabase.sql) =====
 // ใส่ค่าจาก Supabase > Project Settings > API แล้วแอปจะโหลดข้อมูลจากฐานข้อมูลแทนข้อมูลในไฟล์
-const SUPABASE_URL = '';
-const SUPABASE_KEY = '';   // anon public key
+const SUPABASE_URL = 'https://cgkdkbojhydwllkhyzms.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_0v3QnXWtJ-ShDEpKEym23Q_9xTsyWEi';   // publishable key (สาธารณะ ใส่ในโค้ดได้)
 const IMG_BASE = SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/assy/` : 'img/';
-// ห้องสมุด: มี Supabase = เปิดจาก bucket "docs" (ไฟล์ชื่อ <Drive id>.pdf) · ไม่มี = เปิดใน Google Drive
-const DOC_URL = d => SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/docs/${d.id}.pdf` : `https://drive.google.com/file/d/${d.id}/view`;
+// ห้องสมุด: เปิดใน Google Drive เสมอ — ponytail: PDF รวม ~712 MB เกินโควตาฟรี 1 GB/50 MB ต่อไฟล์ ย้ายขึ้น bucket "docs" เมื่อใช้ Pro
+const DOC_URL = d => `https://drive.google.com/file/d/${d.id}/view`;
 
 let CABLES = [ // [ชื่อ, กก./100 ม.] จาก "โปรแกรมที่ใช้สำหรับคำนวณเศษสาย.xlsx"
   ['สายหุ้มพีวีซี 25 ต.มม.',12],['สายหุ้มพีวีซี 35 ต.มม.',14.5],['สายหุ้มพีวีซี 50 ต.มม.',21.5],['สายหุ้มพีวีซี 70 ต.มม.',27],['สายหุ้มพีวีซี 95 ต.มม.',36.5],['สายหุ้มพีวีซี 120 ต.มม.',47],['สายหุ้มพีวีซี 185 ต.มม.',66.8],
@@ -826,7 +829,7 @@ function render(still) { // still === true: วาดใหม่โดยไม
       return list.length ? `<h3 class="grp">${g}</h3><div class="grid mini">${list.map(headCard).join('')}</div>` : ''; }).join('');
   }
   if (docs.length && !(cat === 'all' && !q)) {
-    html += `<h2 class="sec">ห้องสมุดเอกสาร <small>· เปิดไฟล์ต้นฉบับ${SUPABASE_URL ? '' : 'ใน Google Drive'}</small></h2>`;
+    html += `<h2 class="sec">ห้องสมุดเอกสาร <small>· เปิดไฟล์ต้นฉบับใน Google Drive</small></h2>`;
     if (cat === 'doc' && !q) html += subtabs('dc', DOC_CATS, dc, c => DOCS.filter(d => d.c === c).length, DOCS.length);
     const shown = cat === 'doc' && !q && dc !== 'all' ? docs.filter(d => d.c === dc) : docs;
     html += DOC_CATS.map(c => { const list = shown.filter(d => d.c === c);
@@ -924,6 +927,7 @@ function openCredit() {
 cr.addEventListener('click', e => { if (e.target === cr) cr.close(); });
 
 render(); decorate(); loadDb();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {}); // เปิดแบบดับเบิลคลิกไฟล์ (file://) จะไม่มี PWA — ปกติ
 </script>
 </body>
 </html>
