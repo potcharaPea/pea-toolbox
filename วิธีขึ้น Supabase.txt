@@ -1,0 +1,54 @@
+วิธีย้าย PEA ToolBox ขึ้น Supabase (ทำตอนมี project ว่าง)
+==========================================================
+
+ก่อนเริ่ม: ถ้าแก้ข้อมูลสาย/มาตรฐานใน index.html หลังวันนี้ ให้รัน  node gen-sql.js  ก่อน
+          เพื่อสร้าง supabase.sql ใหม่ให้ตรงกับข้อมูลล่าสุด
+
+ขั้นที่ 1  สร้าง Project
+  1. เข้า https://supabase.com/dashboard
+  2. เลือก org > กด New project
+  3. Project name: pea-toolbox
+     Database Password: กด Generate แล้วจดเก็บ
+     Region: Southeast Asia (Singapore)
+  4. กด Create new project รอ 1-2 นาที
+
+ขั้นที่ 2  สร้างตาราง + ที่เก็บรูป
+  1. แถบซ้าย > SQL Editor > + New query
+  2. เปิด supabase.sql ด้วย Notepad > Ctrl+A > Ctrl+C
+  3. วางในช่อง SQL > กด Run (Ctrl+Enter)
+     (ถ้าขึ้นเตือน destructive operation กดยืนยันได้)
+  4. ต้องขึ้น Success
+  5. ตรวจ: Table Editor มีตาราง cables (53 แถว), standards (20 แถว), docs (54 แถว)
+          Storage มี bucket ชื่อ assy และ docs
+
+ขั้นที่ 3  อัปโหลดรูปแบบ Assy
+  1. แถบซ้าย > Storage > คลิก bucket "assy"
+  2. กด Upload files > เลือกไฟล์ทั้งหมดในโฟลเดอร์ img (assy-*.jpg, head-*.png, sl-*.jpg รวม 67 ไฟล์ ~15 MB)
+     ชื่อไฟล์ต้องคงเดิม ห้ามเปลี่ยนชื่อ
+
+ขั้นที่ 3.1  อัปโหลดเอกสารห้องสมุด (54 ไฟล์ ~712 MB)
+  - ไฟล์ PDF ต้องตั้งชื่อเป็น <Drive id>.pdf ตามคอลัมน์ id ในตาราง docs
+    (ให้ Claude ช่วยดาวน์โหลดจาก Drive + เปลี่ยนชื่อให้ได้)
+  - Storage > bucket "docs" > Upload files
+  !! แพ็กเกจฟรี: ไฟล์ละไม่เกิน 50 MB · พื้นที่รวม 1 GB !!
+     ไฟล์ที่เกิน 50 MB มี 3 ไฟล์ (ต้องบีบอัด PDF ก่อน หรือใช้แพ็กเกจ Pro):
+       - คู่มือตรวจมาตรฐานงานก่อสร้างและปรับปรุงระบบจำหน่าย 143 MB
+       - ระเบียบการตรวจสอบมิเตอร์ 2559 76 MB
+       - มาตรฐานงานก่อสร้าง (ตรวจสอบ) 57 MB
+  - ระหว่างที่ยังไม่อัปโหลด ห้องสมุดจะเปิดไม่ได้เมื่อใส่ SUPABASE_URL แล้ว
+    ควรอัปโหลดให้ครบก่อนขั้นที่ 4
+
+ขั้นที่ 4  ต่อแอปเข้ากับ Supabase
+  1. Project Settings (เฟือง) > Data API > คัดลอก Project URL
+  2. Project Settings > API Keys > คัดลอก anon public / Publishable key
+     !! ห้ามใช้ service_role / Secret key !!
+  3. เปิด index.html ด้วย Notepad หาบรรทัด
+        const SUPABASE_URL = '';
+        const SUPABASE_KEY = '';
+     ใส่ค่าที่คัดลอกไว้ระหว่าง '' แล้วเซฟ
+     (หรือส่ง 2 ค่านี้ให้ Claude ใส่ให้)
+  4. เปิดแอป > ดูท้ายหน้าต้องมีคำว่า "ข้อมูลจาก Supabase"
+
+หมายเหตุ
+  - Project ฟรีจะถูกพักถ้าไม่มีคนใช้ 7 วัน ทำ keep-alive แบบ KceBudget ได้
+  - แก้ข้อมูลหลังขึ้นแล้ว: Table Editor > แก้ในตารางได้เลย ไม่ต้องแก้โค้ด

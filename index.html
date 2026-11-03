@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PEA ToolBox</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2374045F'/%3E%3Cpath d='M13 3 5 14h6l-1 7 8-11h-6z' fill='%23ffd23a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pea:#74045F; --pea2:#A2187F; --pea-soft:#f6edf4; --ink:#2b1328; --mute:#76637a;
+  --line:#ecdfe9; --bg:#fff; --card:#fff; --ok:#16855a; --warn:#c07a00; --bad:#c62839;
+  --r:20px; --shadow:0 10px 30px -12px rgba(116,4,95,.25); --gold:#f5b700;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Prompt,system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;
+  background:radial-gradient(900px 500px at 0% 45%,#fbeff8 0,transparent 60%),radial-gradient(800px 500px at 100% 80%,#fff6df 0,transparent 60%),#fff}
+button,input,select{font:inherit;color:inherit}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;color:#fff;padding:36px 16px 130px;isolation:isolate;
+  background:linear-gradient(140deg,#8a0a72 0%,var(--pea) 40%,#3a0233 100%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(420px circle at var(--mx,70%) var(--my,30%),rgba(255,255,255,.14),transparent 60%)}
+.aurora{position:absolute;inset:-20%;z-index:-1;pointer-events:none}
+.aurora i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:drift 16s ease-in-out infinite alternate}
+.aurora i:nth-child(1){width:520px;height:520px;left:55%;top:-10%;background:#ff3fb4}
+.aurora i:nth-child(2){width:420px;height:420px;left:5%;top:40%;background:#7b2ff7;animation-duration:20s}
+.aurora i:nth-child(3){width:360px;height:360px;left:75%;top:55%;background:var(--gold);opacity:.35;animation-duration:24s}
+@keyframes drift{to{translate:-12% 10%;scale:1.15}}
+.gridbg{position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse at 70% 30%,#000 10%,transparent 70%);mask-image:radial-gradient(ellipse at 70% 30%,#000 10%,transparent 70%)}
+.sparks{position:absolute;inset:0;z-index:0;pointer-events:none}
+.sparks i{position:absolute;bottom:-10px;width:calc(4px*var(--s));height:calc(4px*var(--s));border-radius:50%;background:#ffe27a;
+  box-shadow:0 0 10px 2px rgba(255,210,58,.8);animation:float-up linear infinite}
+@keyframes float-up{0%{transform:translateY(0);opacity:0}10%{opacity:1}100%{transform:translateY(-480px) translateX(30px);opacity:0}}
+.hero-inner{max-width:1080px;margin:0 auto;position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.hero-text{flex:1;min-width:0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.3px}
+.logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#ffe27a,var(--gold));box-shadow:0 0 0 4px rgba(255,210,58,.18),0 8px 24px -6px rgba(255,190,0,.8)}
+.logo svg{width:22px;height:22px}
+.badge{font-size:12px;font-weight:500;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25)}
+.hero h1{font-size:clamp(32px,6.4vw,58px);line-height:1.12;margin:26px 0 10px;font-weight:700;letter-spacing:-.5px}
+.grad{background:linear-gradient(90deg,#ffe27a,#ffb3e6,#fff,#ffe27a);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 6s linear infinite}
+@keyframes shimmer{to{background-position:300% 0}}
+.hero p{margin:0 0 26px;opacity:.85;font-weight:300;font-size:clamp(15px,2.4vw,18px)}
+.search{display:flex;align-items:center;gap:10px;background:#fff;border-radius:999px;padding:8px 10px 8px 20px;max-width:540px;
+  box-shadow:0 18px 40px -12px rgba(0,0,0,.45);transition:box-shadow .3s}
+.search:focus-within{box-shadow:0 0 0 5px rgba(255,210,58,.35),0 18px 40px -12px rgba(0,0,0,.45)}
+.search svg{width:20px;height:20px;color:var(--mute);flex:none}
+.search input{flex:1;border:0;outline:0;padding:10px 0;background:none;min-width:0;color:var(--ink)}
+.search kbd{font:12px Prompt,sans-serif;color:var(--mute);border:1px solid var(--line);border-radius:8px;padding:2px 8px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.stat{padding:10px 16px;border-radius:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:flex;flex-direction:column;min-width:92px}
+.stat b{font-size:24px;font-weight:700;line-height:1.1;color:#ffe9a6}
+.stat span{font-size:12px;opacity:.8}
+.pole{width:340px;flex:none;overflow:visible;animation:hover-y 6s ease-in-out infinite;filter:drop-shadow(0 24px 40px rgba(0,0,0,.3))}
+@keyframes hover-y{50%{translate:0 -10px}}
+.pole .w{fill:none;stroke:rgba(255,255,255,.5);stroke-width:2}
+.pole .pulse{fill:none;stroke:#ffd23a;stroke-width:3.5;stroke-linecap:round;stroke-dasharray:16 260;animation:pulse 2.4s linear infinite;filter:drop-shadow(0 0 6px #ffd23a)}
+.pole .pulse:nth-of-type(2n){animation-delay:-1.2s}
+@keyframes pulse{from{stroke-dashoffset:276}to{stroke-dashoffset:0}}
+.pole .orbit{fill:none;stroke:rgba(255,255,255,.16);stroke-dasharray:3 9;transform-origin:160px 170px;animation:spin 40s linear infinite}
+.pole .orbit.o2{animation-direction:reverse;animation-duration:28s}
+@keyframes spin{to{rotate:360deg}}
+.pole .halo{transform-origin:160px 175px;animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{50%{scale:1.15;opacity:.7}}
+.wave{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:70px;z-index:1}
+@media (max-width:760px){
+  .pole{position:absolute;right:-70px;top:-10px;width:230px;opacity:.28;z-index:-1}
+  .stat{min-width:0;padding:8px 12px}.stat b{font-size:20px}
+}
+@media (pointer:coarse){.search kbd{display:none}}
+@media (max-width:520px){ /* มือถือ: การ์ด 2 คอลัมน์ ไม่ต้องเลื่อนยาว */
+  main .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .grid .card{padding:14px;gap:6px}
+  .grid .ico{width:42px;height:42px;border-radius:13px}.grid .ico svg{width:21px;height:21px}
+  .grid .card b{font-size:14px;line-height:1.35}
+  .grid .card small{font-size:12px}
+  .grid .card .thumb{width:calc(100% + 28px);margin:-14px -14px 4px}
+  .grid .tag{font-size:10px;padding:2px 8px}
+  .grid .star{width:30px;height:30px;font-size:18px;top:6px;right:6px}
+}
+.wires{position:absolute;inset:auto 0 30px 0;height:150px;opacity:.4;z-index:0}
+.wires path{fill:none;stroke:#fff;stroke-width:1.4;stroke-dasharray:6 10;animation:flow 2.4s linear infinite}
+.wires path:nth-child(2){animation-duration:3.1s;opacity:.7}
+.wires path:nth-child(3){animation-duration:3.8s;opacity:.5}
+.spark{fill:#ffe27a;filter:drop-shadow(0 0 6px #ffd23a)}
+@keyframes flow{to{stroke-dashoffset:-160}}
+
+/* ---------- content ---------- */
+main{max-width:1080px;margin:-70px auto 0;padding:0 16px 60px;position:relative;z-index:2}
+.tabs{position:sticky;top:10px;z-index:5;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:6px;border-radius:999px;width:max-content;max-width:100%;
+  background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.7);box-shadow:0 14px 34px -14px rgba(116,4,95,.45)}
+.tab{border:0;background:none;padding:9px 16px;border-radius:999px;cursor:pointer;color:var(--mute);transition:.25s;white-space:nowrap;flex:none}
+.tab:hover{color:var(--pea)}
+.tab[aria-selected=true]{background:linear-gradient(135deg,var(--pea2),var(--pea));color:#fff;box-shadow:0 6px 16px -6px rgba(162,24,127,.7)}
+h2.sec{font-size:clamp(18px,3vw,22px);color:var(--ink);font-weight:700;margin:40px 4px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h2.sec::before{content:"";width:6px;height:24px;border-radius:6px;background:linear-gradient(var(--gold),var(--pea2))}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.card{all:unset;box-sizing:border-box;cursor:pointer;border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px;overflow:hidden;
+  border:1px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--line),var(--line)) border-box;
+  box-shadow:0 4px 14px -8px rgba(116,4,95,.18);
+  opacity:0;translate:0 18px;animation:rise .6s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(min(var(--i),24)*55ms);
+  transition:transform .25s ease-out,box-shadow .3s}
+.card:hover,.card:focus-visible{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-6px);
+  background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--pea2),var(--gold)) border-box;
+  box-shadow:0 24px 44px -20px rgba(116,4,95,.5)}
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.75) 48%,transparent 62%);translate:-130% 0;transition:translate .9s}
+.card:hover::after{translate:130% 0}
+.card:focus-visible{outline:2px solid var(--pea);outline-offset:2px}
+@keyframes rise{to{opacity:1;translate:0 0}}
+.ico{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;background:var(--pea-soft);color:var(--pea);transition:transform .35s}
+.card[data-kind=calc] .ico{background:linear-gradient(135deg,#c2309c,var(--pea));color:#fff;box-shadow:0 10px 22px -8px rgba(162,24,127,.65)}
+.card[data-kind=std] .ico{background:linear-gradient(135deg,#fff3d1,#ffe09a);color:#8a5d00}
+.card[data-kind^=goto]{background:linear-gradient(150deg,#fff 40%,#fdf2fa) padding-box,linear-gradient(135deg,var(--line),var(--line)) border-box}
+.card[data-kind^=goto]:hover{background:linear-gradient(150deg,#fff 40%,#fdf2fa) padding-box,linear-gradient(135deg,var(--pea2),var(--gold)) border-box}
+.card:hover .ico{transform:rotate(-8deg) scale(1.1)}
+.ico svg{width:24px;height:24px}
+.card b{font-weight:600;font-size:16px}
+.card small{color:var(--mute);font-size:13px;line-height:1.5}
+.thumb{display:block;width:calc(100% + 36px);margin:-18px -18px 4px;aspect-ratio:16/9;object-fit:cover;border-radius:var(--r) var(--r) 0 0;background:var(--pea-soft);transition:transform .4s}
+.card:hover .thumb{transform:scale(1.03)}
+.card:has(.thumb){overflow:hidden}
+.grid.mini{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.grid.mini .card{padding:12px;gap:4px}
+.grid.mini .thumb{width:calc(100% + 24px);margin:-12px -12px 6px}
+.grid.mini b{font-size:14px}
+.grid.mini small{font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.subtabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:20px 0 0;padding-bottom:4px}
+.subtabs .tab{background:#fff;border:1px solid var(--line);font-size:14px;padding:7px 14px}
+.subtabs .tab[aria-selected=true]{background:var(--pea);border-color:var(--pea);color:#fff}
+.subtabs .tab small{opacity:.7;margin-left:4px}
+h3.grp{font-size:14px;font-weight:600;color:var(--pea);margin:18px 4px 8px}
+h2.sec small{font-size:12px;font-weight:400}
+.docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.doc{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);text-decoration:none;
+  box-shadow:0 4px 12px -8px rgba(116,4,95,.2);opacity:0;translate:0 18px;animation:rise .45s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(min(var(--i),20)*30ms);transition:border-color .2s,transform .2s}
+.doc:hover,.doc:focus-visible{border-color:var(--pea);transform:translateX(4px)}
+.doc svg{width:20px;height:20px;color:var(--pea);flex:none}
+.doc span{flex:1;font-size:14px;line-height:1.4}
+.doc small{color:var(--mute);font-size:12px;white-space:nowrap}
+@media (max-width:400px){.docs{grid-template-columns:1fr}}
+.card{position:relative}
+.star{position:absolute;top:10px;right:10px;z-index:2;width:36px;height:36px;display:grid;place-items:center;border-radius:50%;
+  font-size:22px;line-height:1;color:#d9cdd7;cursor:pointer;transition:color .2s,transform .2s,background .2s}
+.star:hover{background:#fff6dc;color:#e8a600;transform:scale(1.15)}
+.star.on{color:#e8a600;filter:drop-shadow(0 1px 3px rgba(232,166,0,.5))}
+.star.pop{animation:star-pop .45s cubic-bezier(.2,.9,.3,1.6)}
+@keyframes star-pop{40%{transform:scale(1.6) rotate(15deg)}}
+.still .card,.still .doc{animation:none;opacity:1;translate:none}
+.star-toggle{border:1.5px solid #e8a600;background:#fff;color:#9a6a00;border-radius:999px;padding:7px 16px;cursor:pointer;font-size:14px;margin-bottom:14px;transition:.2s}
+.star-toggle[aria-pressed=true]{background:linear-gradient(135deg,#ffe27a,var(--gold));border-color:var(--gold);color:#4a2f00}
+.big-star{color:#e8a600;font-size:26px;line-height:1}
+.tag{font-size:11px;color:var(--pea);background:var(--pea-soft);border-radius:999px;padding:2px 10px;align-self:flex-start}
+.empty{color:var(--mute);padding:30px 4px}
+
+/* ---------- dialog ---------- */
+dialog{border:0;padding:0;border-radius:24px;width:min(640px,calc(100% - 24px));max-height:calc(100% - 24px);box-shadow:0 30px 80px -20px rgba(43,19,40,.5)}
+dialog::backdrop{background:rgba(43,19,40,.45);backdrop-filter:blur(3px)}
+dialog[open]{animation:pop .35s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{opacity:0;transform:translateY(20px) scale(.96)}}
+.dhead{position:sticky;top:0;background:linear-gradient(135deg,var(--pea),var(--pea2));color:#fff;padding:18px 20px;display:flex;align-items:center;gap:12px;z-index:1}
+.dhead h3{margin:0;font-size:18px;font-weight:600;flex:1}
+.x{border:0;background:rgba(255,255,255,.18);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:20px;line-height:1}
+.dbody{padding:20px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mute)}
+label.f input,label.f select{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;outline:0;transition:border-color .2s;width:100%}
+label.f input:focus,label.f select:focus{border-color:var(--pea)}
+.result{margin-top:18px;background:var(--pea-soft);border-radius:16px;padding:16px}
+.big{font-size:34px;font-weight:700;color:var(--pea);line-height:1.1}
+.big small{font-size:15px;font-weight:500;color:var(--mute)}
+.rows{display:grid;gap:6px;margin-top:10px;font-size:14px}
+.rows div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed #e2cfdd;padding-bottom:6px}
+.note{font-size:12px;color:var(--mute);margin-top:14px;line-height:1.6}
+.pill{display:inline-block;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:500;color:#fff}
+.bars{display:flex;gap:18px;align-items:flex-end;height:140px;margin:14px 0 4px;padding:0 6px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;font-size:13px}
+.bar i{display:block;width:100%;max-width:70px;border-radius:10px 10px 4px 4px;background:linear-gradient(var(--pea2),var(--pea));transition:height .6s cubic-bezier(.2,.8,.2,1);min-height:4px}
+.bar i.max{background:linear-gradient(#e2566c,var(--bad))}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+th,td{padding:8px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+th{color:var(--mute);font-weight:500;font-size:12px}
+tr.hl td{background:#fbe9f6;color:var(--pea);font-weight:600}
+ul.pts{margin:0;padding-left:20px;line-height:1.8}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center;font-size:12px;color:var(--mute)}
+.chip{border:1.5px solid var(--pea);background:#fff;color:var(--pea);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s}
+.chip:hover{background:var(--pea);color:#fff}
+.chip svg{width:15px;height:15px}
+#lb{width:min(1000px,calc(100% - 16px));background:#1d0c1b}
+#lb .dbody{padding:0;overflow:auto;max-height:calc(100vh - 90px);text-align:center}
+#lbimg{display:block;width:100%;height:auto;cursor:zoom-in;background:#fff}
+#lbimg.zoom{width:220%;max-width:none;cursor:zoom-out}
+#lbmsg{color:#f3dcec;padding:50px 20px}
+footer{text-align:center;color:rgba(255,255,255,.75);font-size:13px;padding:56px 16px 40px;margin-top:30px;
+  background:radial-gradient(600px 200px at 50% 0,rgba(255,63,180,.35),transparent 70%),linear-gradient(140deg,var(--pea),#2e0229)}
+footer::before{content:"⚡ PEA ToolBox";display:block;color:#fff;font-size:18px;font-weight:600;margin-bottom:6px}
+
+/* ---------- dialog: ตกแต่งเพิ่ม ---------- */
+.dhead{background:linear-gradient(120deg,#c2309c,var(--pea),#4a0340,#c2309c);background-size:300% 100%;animation:shimmer 10s linear infinite}
+.dhead::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(300px 80px at 85% 0,rgba(255,210,58,.35),transparent 70%)}
+.dhead h3,.dhead .x{position:relative;z-index:1}
+.x:focus{outline:none}.x:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ---------- เครดิตผู้พัฒนา ---------- */
+.dev-btn{cursor:pointer;color:#fff;font:inherit;font-size:12px;transition:background .2s,transform .2s}
+.dev-btn:hover{background:rgba(255,255,255,.28);transform:translateY(-1px)}
+.foot-dev{margin-top:14px;padding:6px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1)}
+#cr{width:min(420px,calc(100% - 32px));background:transparent;box-shadow:none;overflow:visible}
+#cr::backdrop{background:rgba(30,6,28,.7);backdrop-filter:blur(6px)}
+.cr-card{position:relative;overflow:hidden;text-align:center;color:#fff;padding:44px 24px 30px;border-radius:28px;
+  background:radial-gradient(400px 200px at 50% 0,rgba(255,63,180,.55),transparent 70%),linear-gradient(160deg,#8a0a72,var(--pea) 45%,#2e0229);
+  box-shadow:0 40px 90px -20px rgba(116,4,95,.8),inset 0 0 0 1px rgba(255,255,255,.15)}
+.cr-card .x{position:absolute;top:14px;right:14px;z-index:2}
+.cr-logo{width:84px;height:84px;margin:0 auto 18px;border-radius:24px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#ffe27a,var(--gold));box-shadow:0 0 0 8px rgba(255,210,58,.15),0 14px 40px -6px rgba(255,190,0,.9);
+  animation:cr-logo .9s cubic-bezier(.2,1.4,.4,1) both}
+.cr-logo svg{width:46px;height:46px}
+@keyframes cr-logo{from{opacity:0;transform:scale(.2) rotate(-200deg)}}
+.cr-k{margin:0;font-size:14px;letter-spacing:3px;opacity:.8;animation:cr-up .5s .45s both}
+#crname{margin:8px 0 6px;font-size:clamp(28px,8vw,36px);font-weight:700;line-height:1.3;min-height:1.3em}
+#crname span{display:inline-block;opacity:0;animation:cr-letter .55s cubic-bezier(.2,1.6,.4,1) forwards;animation-delay:calc(.7s + var(--d)*60ms);
+  background:linear-gradient(180deg,#fff,#ffe9a6);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes cr-letter{from{opacity:0;transform:translateY(28px) scale(.3) rotate(-18deg)}to{opacity:1;transform:none}}
+.cr-pos{display:inline-block;margin:6px 0 0;padding:6px 16px;border-radius:999px;font-weight:600;color:#4a2f00;
+  background:linear-gradient(135deg,#ffe27a,var(--gold));animation:cr-up .6s cubic-bezier(.2,1.4,.4,1) both;animation-delay:var(--pd,1.8s)}
+.cr-app{margin:20px 0 0;font-size:12px;opacity:.65;animation:cr-up .5s both;animation-delay:calc(var(--pd,1.8s) + .3s)}
+@keyframes cr-up{from{opacity:0;transform:translateY(16px)}}
+.cr-burst{position:absolute;left:50%;top:86px;width:0;height:0}
+.cr-burst i{position:absolute;width:6px;height:6px;border-radius:50%;background:#ffe27a;box-shadow:0 0 10px 2px rgba(255,210,58,.9);
+  opacity:0;animation:cr-burst 1s cubic-bezier(.1,.8,.3,1) .35s forwards}
+@keyframes cr-burst{0%{opacity:1;transform:rotate(var(--a)) translateX(0)}100%{opacity:0;transform:rotate(var(--a)) translateX(var(--r))}}
+.result{background:linear-gradient(135deg,#fbf0f8,#fff8e8);border:1px solid #f1dcea}
+.big>span{background:linear-gradient(90deg,var(--pea),#d4006f,var(--pea2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.chip{transition:background .2s,color .2s,transform .2s}
+.chip:hover{transform:translateY(-2px);box-shadow:0 8px 18px -8px rgba(116,4,95,.6)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card,.doc{opacity:1;translate:none}.sparks{display:none}
+  #crname span{opacity:1}.cr-burst{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero" id="hero">
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="gridbg" aria-hidden="true"></div>
+  <div class="sparks" id="sparks" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="brand">
+        <span class="logo"><svg viewBox="0 0 24 24" fill="#5a0349"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+        PEA ToolBox <span class="badge">กฟส.คำชะอี</span>
+        <button class="badge dev-btn" onclick="openCredit()">✦ ผู้พัฒนา</button>
+      </div>
+      <h1>เครื่องมือช่างไฟฟ้า<br><span class="grad">รวมไว้ในที่เดียว</span></h1>
+      <p>คำนวณหน้างาน · มาตรฐานก่อสร้างระบบจำหน่าย · แบบ Assy ครบ</p>
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="ค้นหา เช่น ค่าไฟ, กราวด์, ปักเสา" aria-label="ค้นหาเครื่องมือ">
+        <kbd>/</kbd>
+      </label>
+      <div class="stats" id="stats"></div>
+    </div>
+    <!-- ภาพเสาไฟ + หม้อแปลง มีกระแสไฟวิ่งตามสาย -->
+    <svg class="pole" viewBox="0 0 320 360" aria-hidden="true">
+      <defs>
+        <linearGradient id="pole-pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity=".15"/></linearGradient>
+        <radialGradient id="pole-halo"><stop offset="0" stop-color="#ffd23a" stop-opacity=".75"/><stop offset="1" stop-color="#ffd23a" stop-opacity="0"/></radialGradient>
+        <linearGradient id="pole-tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#f3d7ea"/></linearGradient>
+      </defs>
+      <circle class="orbit" cx="160" cy="170" r="150"/>
+      <circle class="orbit o2" cx="160" cy="170" r="118"/>
+      <circle class="halo" cx="160" cy="175" r="95" fill="url(#pole-halo)"/>
+      <path class="w" d="M85 52 Q20 100 -60 82"/><path class="w" d="M160 46 Q90 110 -60 112"/><path class="w" d="M235 52 Q300 100 380 82"/><path class="w" d="M160 46 Q240 110 380 112"/>
+      <path class="pulse" d="M85 52 Q20 100 -60 82"/><path class="pulse" d="M235 52 Q300 100 380 82"/><path class="pulse" d="M160 46 Q240 110 380 112"/><path class="pulse" d="M160 46 Q90 110 -60 112"/>
+      <path d="M153 30 H167 L175 360 H145 Z" fill="url(#pole-pg)"/>
+      <rect x="66" y="60" width="188" height="11" rx="4" fill="#fff"/>
+      <g fill="#ffe9a6"><rect x="79" y="42" width="12" height="18" rx="4"/><rect x="154" y="36" width="12" height="24" rx="4"/><rect x="229" y="42" width="12" height="18" rx="4"/></g>
+      <path d="M200 135 V110 M216 135 V110 M232 135 V110" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+      <rect x="186" y="132" width="62" height="82" rx="12" fill="url(#pole-tg)"/>
+      <path d="M194 150 H240 M194 162 H240 M194 174 H240 M194 186 H240" stroke="#d9b3cf" stroke-width="3" stroke-linecap="round"/>
+      <path d="M220 192 l-9 13 h7 l-2 10 9-13 h-7z" fill="var(--gold)"/>
+      <path d="M175 175 H186" stroke="#fff" stroke-width="5"/>
+    </svg>
+  </div>
+  <svg class="wires" viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true">
+    <path id="w1" d="M0 40 Q300 110 600 40 T1200 40"/>
+    <path d="M0 70 Q300 140 600 70 T1200 70"/>
+    <path d="M0 100 Q300 160 600 100 T1200 100"/>
+    <circle class="spark" r="4"><animateMotion dur="5s" repeatCount="indefinite"><mpath href="#w1"/></animateMotion></circle>
+  </svg>
+  <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 C360 85 1080 -5 1440 38 V70 H0Z" fill="#fff"/></svg>
+</header>
+
+<main>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-cat="all" aria-selected="true">ทั้งหมด</button>
+    <button class="tab" role="tab" data-cat="calc" aria-selected="false">เครื่องคำนวณ</button>
+    <button class="tab" role="tab" data-cat="std" aria-selected="false">มาตรฐานก่อสร้าง</button>
+    <button class="tab" role="tab" data-cat="head" aria-selected="false">ชุดหัวเสา</button>
+    <button class="tab" role="tab" data-cat="doc" aria-selected="false">ห้องสมุด</button>
+  </div>
+  <div id="list"></div>
+</main>
+<footer><span id="foot">เครื่องมือช่างไฟฟ้า กฟภ. · demo · ตรวจสอบกับเอกสารต้นฉบับก่อนใช้งานจริงทุกครั้ง</span>
+  <br><button class="dev-btn foot-dev" onclick="openCredit()">✦ ผู้พัฒนา</button></footer>
+
+<!-- เครดิตผู้พัฒนา -->
+<dialog id="cr" aria-labelledby="crname">
+  <div class="cr-card">
+    <button class="x" aria-label="ปิด" onclick="cr.close()">×</button>
+    <div class="cr-burst" id="crburst" aria-hidden="true"></div>
+    <div class="cr-logo"><svg viewBox="0 0 24 24" fill="#5a0349"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+    <p class="cr-k">พัฒนาโดย</p>
+    <h3 id="crname"></h3>
+    <p class="cr-pos" id="crpos"></p>
+    <p class="cr-app">PEA ToolBox · เครื่องมือช่างไฟฟ้า กฟภ.</p>
+  </div>
+</dialog>
+
+<dialog id="dlg" aria-labelledby="dtitle">
+  <div class="dhead"><h3 id="dtitle"></h3><button class="x" aria-label="ปิด" onclick="dlg.close()">×</button></div>
+  <div class="dbody" id="dbody"></div>
+</dialog>
+
+<dialog id="lb" aria-labelledby="lbt">
+  <div class="dhead"><h3 id="lbt"></h3><button class="x" aria-label="ปิด" onclick="lb.close()">×</button></div>
+  <div class="dbody"><img id="lbimg" alt="แบบมาตรฐาน" onclick="this.classList.toggle('zoom')"><p id="lbmsg" hidden>ยังไม่มีรูปแบบนี้ในระบบ</p></div>
+</dialog>
+
+<!-- ส่วนคำนวณล้วน ไม่แตะ DOM — test.js ดึงบล็อกนี้ไปทดสอบ -->
+<script id="calc">
+// อัตราบ้านอยู่อาศัย กฟภ. [จำนวนหน่วยในขั้น, บาท/หน่วย]
+const TARIFF = {
+  '1.1.1': { service: 8.19,  steps: [[15,2.3488],[10,2.9882],[10,3.2405],[65,3.6237],[50,3.7171],[250,4.2218],[Infinity,4.4217]] },
+  '1.1.2': { service: 24.62, steps: [[150,3.2484],[250,4.2218],[Infinity,4.4217]] },
+};
+// Assy. No. 9706 — ค่าสูงสุดของความต้านทานจำเพาะดิน (โอห์ม-เมตร) ตามค่าความต้านทานดินที่ต้องการ
+const GROUND = [
+  {type:'GR-1',5:17, 10:34, 25:85},  {type:'GR-2',5:39, 10:79, 25:198},
+  {type:'GR-3',5:57, 10:114,25:285}, {type:'GR-4',5:74, 10:147,25:368},
+  {type:'GR-5',5:86, 10:174,25:436}, {type:'GS',  5:130,10:262,25:655},
+  {type:'GC',  5:309,10:622,25:1555},
+];
+const calc = {
+  bill(units, type, ft) {
+    const t = TARIFF[type]; let left = units, energy = 0;
+    for (const [n, rate] of t.steps) { const u = Math.min(left, n); energy += u * rate; left -= u; if (left <= 0) break; }
+    const ftCost = units * ft, base = energy + t.service + ftCost, vat = base * 0.07;
+    return { energy, service: t.service, ftCost, vat, total: base + vat };
+  },
+  unbalance(a, b, c) {
+    const avg = (a + b + c) / 3;
+    const dev = Math.max(Math.abs(a - avg), Math.abs(b - avg), Math.abs(c - avg));
+    // กระแสนิวทรัลแบบเวกเตอร์ (สมมติ PF ทั้ง 3 เฟสเท่ากัน)
+    const inN = Math.sqrt(Math.max(0, a*a + b*b + c*c - a*b - b*c - c*a));
+    return { avg, pct: avg ? dev / avg * 100 : 0, inN };
+  },
+  trCurrent: (kva, volt) => kva * 1000 / (Math.sqrt(3) * volt),
+  cableKg: (m, kgPer100) => m * kgPer100 / 100,
+  cableM: (kg, kgPer100) => kg * 100 / kgPer100,
+  // ponytail: สมมติกราวด์เดิมเป็น GR-1 (สัมประสิทธิ์ 0.381) ตามตัวอย่างในคู่มือ
+  ground(rBefore, target) {
+    const rho = rBefore / 0.381;
+    const row = GROUND.find(g => rho <= g[target]);
+    return { rho, type: row ? row.type : null };
+  },
+};
+</script>
+
+<script>
+// ===== ข้อมูล (โครงเดียวกับตารางใน supabase.sql) =====
+// ใส่ค่าจาก Supabase > Project Settings > API แล้วแอปจะโหลดข้อมูลจากฐานข้อมูลแทนข้อมูลในไฟล์
+const SUPABASE_URL = '';
+const SUPABASE_KEY = '';   // anon public key
+const IMG_BASE = SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/assy/` : 'img/';
+// ห้องสมุด: มี Supabase = เปิดจาก bucket "docs" (ไฟล์ชื่อ <Drive id>.pdf) · ไม่มี = เปิดใน Google Drive
+const DOC_URL = d => SUPABASE_URL ? `${SUPABASE_URL}/storage/v1/object/public/docs/${d.id}.pdf` : `https://drive.google.com/file/d/${d.id}/view`;
+
+let CABLES = [ // [ชื่อ, กก./100 ม.] จาก "โปรแกรมที่ใช้สำหรับคำนวณเศษสาย.xlsx"
+  ['สายหุ้มพีวีซี 25 ต.มม.',12],['สายหุ้มพีวีซี 35 ต.มม.',14.5],['สายหุ้มพีวีซี 50 ต.มม.',21.5],['สายหุ้มพีวีซี 70 ต.มม.',27],['สายหุ้มพีวีซี 95 ต.มม.',36.5],['สายหุ้มพีวีซี 120 ต.มม.',47],['สายหุ้มพีวีซี 185 ต.มม.',66.8],
+  ['สายทองแดง 2×10 ต.มม.',32.8],['สายทองแดง 2×6 ต.มม.',21.2],
+  ['PIC 22 kV 50 ต.มม.',22.4],['PIC 22 kV 185 ต.มม.',67],['PIC 33 kV 35 ต.มม.',19.7],['PIC 33 kV 50 ต.มม.',28],['PIC 33 kV 95 ต.มม.',42.8],['PIC 33 kV 120 ต.มม.',52.4],['PIC 33 kV 185 ต.มม.',73.8],
+  ['เคเบิลอากาศ 22 kV 50 ต.มม.',48],['เคเบิลอากาศ 22 kV 95 ต.มม.',66],['เคเบิลอากาศ 22 kV 120 ต.มม.',73],['เคเบิลอากาศ 22 kV 185 ต.มม.',96.6],
+  ['เคเบิลอากาศ 33 kV 50 ต.มม.',54.4],['เคเบิลอากาศ 33 kV 70 ต.มม.',63.3],['เคเบิลอากาศ 33 kV 95 ต.มม.',75.2],['เคเบิลอากาศ 33 kV 120 ต.มม.',86.2],['เคเบิลอากาศ 33 kV 150 ต.มม.',96.8],['เคเบิลอากาศ 33 kV 185 ต.มม.',111.4],['เคเบิลอากาศ 33 kV 240 ต.มม.',133.7],
+  ['อลูมิเนียมเปลือย 35 ต.มม.',9.5],['อลูมิเนียมเปลือย 50 ต.มม.',13.5],['อลูมิเนียมเปลือย 70 ต.มม.',19],['อลูมิเนียมเปลือย 95 ต.มม.',26],['อลูมิเนียมเปลือย 120 ต.มม.',33],['อลูมิเนียมเปลือย 185 ต.มม.',51],['อลูมิเนียมเปลือย 400 ต.มม.',110],
+  ['ACSR 35 ต.มม.',14],['ACSR 50 ต.มม.',19.5],['ACSR 95 ต.มม.',38],['ACSR 120 ต.มม.',49.5],
+  ['อลูมิเนียมเจือ 25 ต.มม.',6.7],['อลูมิเนียมเจือ 35 ต.มม.',9.4],['อลูมิเนียมเจือ 50 ต.มม.',13.5],['อลูมิเนียมเจือ 70 ต.มม.',18.1],['อลูมิเนียมเจือ 95 ต.มม.',25.6],['อลูมิเนียมเจือ 120 ต.มม.',32.2],['อลูมิเนียมเจือ 150 ต.มม.',40.6],['อลูมิเนียมเจือ 185 ต.มม.',50.1],['อลูมิเนียมเจือ 240 ต.มม.',67],['อลูมิเนียมเจือ 400 ต.มม.',110.5],['อลูมิเนียมเจือ 625 ต.มม.',173.3],
+  ['ลวดเหล็กตีเกลียว 50 ต.มม.',39],['ลวดเหล็กตีเกลียว 95 ต.มม.',74],['ลวดสลิง 10 ต.มม.',30.5],['ลวดสลิง 13 ต.มม.',58],
+];
+
+let STANDARDS = [ // จาก "ตัวอย่างมาตรฐานงานก่อสร้างคัดมาที่เจอบ่อยๆ.pdf"
+  {grp:'แรงสูง', star:true, title:'การปักเสา', ref:'Assy. No. 8201', desc:'ความเอียง แนวเบี่ยงเบน ความลึก คอนกรีตหุ้มโคน', points:[
+    'เสาเอียงได้ไม่เกิน 5 องศา',
+    'แนวเบี่ยงเบนของสาย: เคเบิลอากาศ 0–2 องศา, สายเปลือย 0–5 องศา',
+    'ความลึกปักเสาดูตาราง (ใช้เครื่องคำนวณ "ความลึกปักเสา")',
+    'เทคอนกรีตโคนเสา ส่วนผสม ซีเมนต์ : ทราย : หิน = 1 : 3 : 5 และติดกายเทียมหรือเสาค้ำยันอย่างน้อย 7 วันให้คอนกรีตแข็งตัว',
+    'Assy. No. 8203 ยกเลิกแล้ว ให้ใช้ 8201 หรือ 8222 แทน']},
+  {grp:'แรงสูง', star:true, title:'สายยึดโยง (Guy)', ref:'Assy. No. 8426 / 8428', desc:'มุม ระยะติดตั้ง Storm / Line / Fix point guys', points:[
+    'ติดให้ใกล้จุดศูนย์กลางแรงดึงของสาย ทำมุม 45° ถ้าพื้นที่ไม่พอยอมให้ไม่น้อยกว่า 30°',
+    'ดึงสายยึดโยงให้ตึงพอเหมาะ',
+    'ห่วงก้านสมอบกอยู่เหนือผิวดิน 15–20 ซม. ก้านต้องไม่โค้งงอและเอียงแนวเดียวกับสายยึดโยง',
+    'Storm guys ติดทุกระยะ 500–1,000 ม. (พื้นที่โล่งที่ทำได้ ติดทุก 3 ต้น)',
+    'Line guys และ Fix point guys ติดทุกระยะ 2–3 กม.',
+    'ถ้าติดตั้งสายยึดโยงไม่ได้ ให้ออกแบบเป็นเสาคู่แทน',
+    'สายแรงสูงกับแรงต่ำบนเสาต้นเดียวกัน ต้องใส่ลูกถ้วยยึดโยงคั่น']},
+  {grp:'แรงสูง', star:true, title:'ชนิดสายในระบบจำหน่าย', ref:'สรุปจากคู่มือ กฟภ.', desc:'สายเปลือย ACSR PIC SAC TAC ต่างกันอย่างไร', points:[
+    'สายเปลือย: อลูมิเนียมล้วน ทนการกัดกร่อน ใช้งานทั่วไปและชายทะเล',
+    'ACSR: มีแกนเหล็ก รับแรงดึงสูง — ไม่มีการก่อสร้างใหม่',
+    'PIC: ฉนวน XLPE 1 ชั้นบาง ใช้แทนสายเปลือยลด Fault ชั่วคราว — ไม่จัดหาเพิ่ม',
+    'SAC: ฉนวน XLPE หนา ไม่มีชีลด์ ใช้แทน PIC หลีกเลี่ยงพื้นที่มลภาวะสูง',
+    'TAC: Fully insulated มีชีลด์ สัมผัสได้ ใช้ในที่ระยะพาดสายจำกัด']},
+  {grp:'แรงสูง', star:true, title:'การผูกสาย SAC บนลูกถ้วย', ref:'Assy. No. 9575 / 9574 / 9553', desc:'ใช้ Tie wire แบบไหน ห้ามใช้แบบไหน', points:[
+    'ใช้ Covered tie wire (ลวดอลูมิเนียมหุ้มฉนวน) หรือ Composite tie wire',
+    'ห้ามใช้ Bare tie wire — เพิ่มความเครียดสนามไฟฟ้า ทำให้ฉนวน SAC เสื่อมเร็ว',
+    'ผูกด้านบน/ด้านข้าง ตามลำดับรอบในแบบการประกอบ',
+    'สายเปลือย: พันด้วยลวดอลูมิเนียมแบน (Armour tape) แล้วผูก Tie wire — Assy. No. 9553']},
+  {grp:'แรงสูง', star:true, title:'การเลือกคอน', ref:'คู่มือตรวจมาตรฐาน', desc:'คอน 2,000 / 2,500 / 3,000 มม. ใช้ที่ไหน', points:[
+    'คอน 2,000 มม.: งานทั่วไป สายเปลือย + SAC (เฟส B เข้ากลางได้)',
+    'คอนปูน 2,500 มม. / คอนเหล็ก 100×50×5 มม. ยาว 2,500 มม.: 22 kV ใช้ได้ทั้งสายเปลือยและ SAC, 33 kV ใช้ได้เฉพาะ SAC',
+    '33 kV สายเปลือย ใช้คอน 3,000 มม. หรือคอนเหล็ก 125×65×6 มม. ยาว 3,000 มม.',
+    'คอน ป.ปลา และ สระอา: 22/33 kV ใช้เฉพาะ SAC']},
+  {grp:'แรงสูง', star:true, title:'Bond wire', ref:'Assy. No. 2301 / 2301B / 2425 / 3423', desc:'ทำไมต้องมี และต่ออย่างไร', points:[
+    'เป็นทางให้กระแสลัดวงจรที่ลูกถ้วยลงดินได้สมบูรณ์ ช่วยให้อุปกรณ์ป้องกันทำงานเร็ว และป้องกันคอนแตกร้าว',
+    'ถ้า Bond wire ขาด แปลว่าลูกถ้วยต้นนั้นเคยลัดวงจร — ใช้สังเกตตอน Patrol',
+    'ไม่มี Bond wire ไฟจะอาร์คที่ Bolt ยึดคอนจนเสื่อม เคยมีกรณีคอนพลิกช่างตกเสา',
+    'ใช้ลวดเหล็กตีเกลียว 50/7 ตร.มม. + แคล้มป์สลัก 2 ตัว',
+    'OHGW ลีดลงหัวเสาทุกต้น ต่อกับลวดเหล็กตีเกลียว 25 ตร.มม.']},
+  {grp:'การต่อลงดิน', star:true, title:'การต่อลงดิน (หม้อแปลง / แรงสูง)', ref:'Assy. No. 9701A / 9706', desc:'ค่าความต้านทาน ระยะห่างกราวด์ HV/LV', points:[
+    'สายดินใช้ลวดเหล็กตีเกลียว 50 ตร.มม. หุ้มท่อ PVC จากใต้ดินขึ้นไป',
+    'ความต้านทานดินแต่ละจุดไม่เกิน 5 โอห์ม (พื้นที่ยากไม่เกิน 25 โอห์ม)',
+    'ความต้านทานรวมของนิวทรัลแรงต่ำไม่เกิน 2 โอห์ม ถ้าเกินให้ปักหลักดินเพิ่ม',
+    'กราวด์แรงต่ำต้องห่างกราวด์แรงสูง 20 เมตร (หม้อแปลงแขวนเสา/นั่งร้าน)',
+    'เชื่อมสายดินกับหลักดินด้วยความร้อน (Exothermic)',
+    'OHGW ต่อร่วมกับสายดินกับดักเสิร์จแรงสูง ช่วยลดความต้านทาน',
+    'ต่อลงดินแบบวงแหวนช่วยลดแรงดันช่วงก้าวที่โคนเสา']},
+  // แรงต่ำ — จาก "มาตรฐานระบบแรงต่ำ (แก้ไข 2569)" กฟฉ.2
+  {grp:'แรงต่ำ', title:'การปักเสา / เสาตอม่อ (แรงต่ำ)', ref:'Assy. No. 8205 / 8241 / 8221 / 8222', desc:'ขนาดเสา ระยะช่วงเสา ความลึกตามสภาพดิน', points:[
+    'เสา คอร. 8 ม.: ระบบ 1 เฟส 2 สาย หรือ 3 สาย พร้อมสายดับไฟถนน',
+    'เสา คอร. 9 ม.: ระบบ 3 เฟส 4 สาย 1 หรือ 2 วงจร',
+    'เสา คอร. 9.70 ม.: แซมพาดสายสื่อสาร หรือใช้เมื่อติดสายยึดโยงต้นสุดไม่ได้',
+    'ระยะช่วงเสา (Span) ปกติไม่เกิน 40 ม.',
+    'ความลึก เสา 8 ม. / 9 ม.: ดินแข็งปานกลาง (ดินปนทราย) 1.50 / 1.50 ม. · ดินแข็ง (ลูกรัง กรวด ดินดาน) 1.10 / 1.20 ม. · หิน 0.70 / 0.80 ม.',
+    'ดินอ่อน (ดินเหนียว ดินเลน มีชั้นน้ำ) หรือพื้นที่ผู้ใช้ไฟสูงกว่าจุดปักเสา ใช้เสาตอม่อ Assy. No. 8221 / 8222']},
+  {grp:'แรงต่ำ', title:'การติดตั้งแร็คและลูกรอก', ref:'Assy. No. 0205 / 0206 / 0207', desc:'แร็คบนเสา 8 ม. / 9 ม. ทางตรง ทางโค้ง', points:[
+    'เสา 8 ม.: Assy. No. 0205, 0206 (1P2W+L, 1P3W+L, 2P3W+L)',
+    'เสา 9 ม.: Assy. No. 0207 — ทางตรง 0–5° และทางโค้ง 5–60°',
+    'ลูกรอกแรงต่ำ (Spool) เป็นฉนวนและรองรับสาย ประกอบกับแร็ค สายพาดผ่านร่องกลางลูกรอก ติดได้ทั้งแนวนอนและแนวตั้ง',
+    'ผูกด้วย Covered tie wire และใช้ลวดเหล็กตีเกลียว 50/7 ตร.มม. ตามแบบ']},
+  {grp:'แรงต่ำ', title:'สมอบกและสายยึดโยง (แรงต่ำ)', ref:'Assy. No. 8403 / 8404 / 8408 / 8410 / 8411 / 8429 / 8431 / 8432', desc:'Terminal / Side guys ขนาดลวด เสาทดแทน', points:[
+    'Terminal guys: รับแรงจากการเข้าปลายสาย ต่อแยกสาย และเสาที่หักมุมเกิน 60° — ติดแนวเดียวกับแรงดึงของสายแต่ละด้าน',
+    'Side guys: ใช้กับสายที่มีมุม 5–60°',
+    'ลูกถ้วยยึดโยงกันกระแสรั่วจากหัวเสาลงสายยึดโยง (8403)',
+    '8408: สายยึดโยงเป็นเส้นเดียว ไม่มีการต่อ · 1 วงจรใช้ลวดเหล็กตีเกลียว 50 ตร.มม. · 3 วงจรใช้ 95 ตร.มม.',
+    'GY-03 นิยมใช้ดึงสาย 50 ACSR ข้ามถนนทางหลวง 4 เลนขึ้นไป',
+    'ติดสายยึดโยงไม่ได้: ใช้เสา 9.70 ม. หรือ 12.20 ม. (ตัดหัวเสา) แทนเสา 8 / 9 ม. (กวฟ.(วน) 224/2567) หรือปักเสาคู่',
+    'แผ่นสมอบกแรงต่ำ Assy. No. 8431 / 8432 · มือลิง 8429']},
+  {grp:'แรงต่ำ', title:'การพาดสายและระยะหย่อนยาน', ref:'Assy. No. 0210 / 0304 / 9214 / 9420 / 9422', desc:'ชนิดสาย ABC ระยะหย่อนต่ำสุด', points:[
+    'สายอลูมิเนียมหุ้ม PVC 750 V 70 °C ขนาด 25–185 ตร.มม.',
+    'Multiplex Cable (0304) · ABC (9214): เฟส 1 จุด = A, 2 จุด = B, 3 จุด = C, สีขาว = นิวทรัล',
+    'ช่วงสายไม่รับแรงดึง: ระยะหย่อนต่ำสุด 1 ม. ยาวไม่เกิน 20 ม. (0210)',
+    'ระยะหย่อนยานต่ำสุด: สาย 50 ตร.มม. 33 ซม. (9420) · สาย 95 ตร.มม. 27 ซม. (9422)']},
+  {grp:'แรงต่ำ', title:'ระยะห่างความปลอดภัยสายแรงต่ำ', ref:'Assy. No. 9301', desc:'ความสูงเหนือถนน ทางเท้า หลังคา', points:[
+    'เหนือทางสัญจรคนหรือยานพาหนะ: 2.90 ม. (ยานพาหนะสูงไม่เกิน 2.45 ม.)',
+    'ทางสำหรับคนเดินเท่านั้น: ลดเหลือ 2.60 ม.',
+    'เหนือทางรถบรรทุก / ทางหลวง: 5.50 ม. (6.00 ม.) — รถสูงไม่เกิน 4.30 ม.',
+    'เหนือหลังคา / ระเบียงที่คนเข้าถึงได้: 2.40 ม. · หลังคาที่คนเข้าไม่ถึง: 0.15 ม.',
+    'แนวระดับ: ผนังด้านปิด / ป้ายโฆษณา 0.15 ม. · สะพานลอยคนข้าม 0.15 ม.']},
+  {grp:'แรงต่ำ', title:'การผูกสายกับลูกรอก', ref:'Assy. No. 9527 / 9527A', desc:'Tie wire ความยาว การผูกแร็คแต่ละแบบ', points:[
+    'ผูกสายอลูมิเนียมหุ้มฉนวนแรงต่ำด้วย Covered tie wire หรือ Tie wire อลูมิเนียมกลมก็ได้',
+    'Tie wire ยาว 1.8 ม. สำหรับพาดสายบนหัวเสา · 1.2 ม. สำหรับพาดสายเมนชายคา',
+    '9527 และ 9527A แยกตามรูปแบบแร็ค — ดูแบบประกอบ']},
+  {grp:'แรงต่ำ', title:'การต่อ เชื่อม และแยกสาย', ref:'Assy. No. 9528 / 9531 / 9558', desc:'Connector ชนิดบีบ IPC การพันเทป', points:[
+    'พันเทป PVC ทุกจุดต่อ: PG connector, connector ชนิดบีบ, connector เข้าปลายสาย, จุดต่อกับดักเสิร์จ — ห้ามปล่อยไม่พันเทป',
+    'Connector ชนิดบีบ H-type: สายเมนต้องเป็นอลูมิเนียมเท่านั้น สายแยกเป็นอลูมิเนียมหรือทองแดง จำนวนรอยบีบเป็นเลขคู่ บีบตามลำดับในแบบ',
+    'Insulation Piercing Connector (IPC) ใช้แยกสายหุ้มฉนวน (9531)',
+    '9558: จำนวนตามประมาณการ']},
+  {grp:'แรงต่ำ', title:'การเข้าปลายสาย (แรงต่ำ)', ref:'Assy. No. 0209 / 0209A / 0211 / 9528', desc:'ขั้นตอน แรงบิดสลัก ปรีฟอร์ม', points:[
+    '0209 เสาต้นสุดท้าย · 0211 เข้าปลายสาย 2 ข้าง · พันเทป PVC 2 ม. ต่อจุด',
+    'ขั้นตอน: เลือก connector ให้เหมาะกับขนาดสาย → ปอกฉนวนตรงจุดที่ connector จับ → ประกอบตามแบบ → ขันสลักให้แน่น',
+    'แรงบิด (Torque): M8 = 2.0 kg-m · M10 = 2.5 kg-m · M12 = 5.0 kg-m',
+    'ใช้ปรีฟอร์มแรงต่ำแทน connector เข้าปลายสายได้ ขนาด 25 / 50 / 95 ตร.มม. (0209A, อนุมัติ ผวก. 17 พ.ค. 2561)']},
+  {grp:'แรงต่ำ', title:'กับดักเสิร์จแรงต่ำ', ref:'Assy. No. 0401', desc:'สเปก จุดติดตั้ง ระยะห่าง', points:[
+    'สเปก: ระบบ 400 V, Rated 480 V, In(max) 5 (10) kA, Up 2 kV',
+    'ติดที่: ต้นหม้อแปลง · ปลาย Sealing end ของเคเบิลใต้ดิน · จุดแยกสายที่ห่างกับดักเสิร์จตัวอื่น ≥ 200 ม. · ปลายสายและปลายสาขา',
+    'ติดทุกระยะไม่เกิน 400 ม. (และพื้นที่ฟ้าผ่าบ่อยตามแบบ)',
+    'ติดเฟสละ 1 ชุด (มีไฟถนนเพิ่มอีก 1 ชุด) ติดแบบเฉียงหรือสลับไปมา',
+    'ติดห่างอุปกรณ์ที่ต้องป้องกันมากเกินไป อุปกรณ์จะเสี่ยงต่อแรงดันเกิน']},
+  {grp:'แรงต่ำ', title:'คอน LT, LT Switch และฟิวส์แรงต่ำ', ref:'Assy. No. 2719A / 3715A / 0604 / 0409A / 0409B', desc:'ลำดับเฟส เลือกขนาดฟิวส์ FSD', points:[
+    'คอน คอร.สปัน 100×100×2,500 มม. พ่นสี / ทำเครื่องหมายเฟส a b c · หม้อแปลง 1 เฟสใช้ 100×100×1,500 มม. (2,500 มม. เมื่อเพิ่มเฟสหรือมีสายดับไฟถนน)',
+    'ลำดับเฟส หม้อแปลงแขวนเสาเดี่ยว ขนานไลน์: วงจร 1 ซ้าย วงจร 2 ขวา ให้เฟส C เข้าหาเสา · ตั้งฉากไลน์: วงจร 1 ด้านถนน วงจร 2 ด้านอาคาร เฟส C เข้าหาอาคาร',
+    'LT Switch ทนกระแส 400 A แรงดัน 500 V ต่อด้านเอาต์พุตหม้อแปลง',
+    'เลือกฟิวส์: มากกว่ากระแสโหลดสูงสุดของวงจร (≤ 125%) และไม่เกินกระแสใช้งานของสาย',
+    'ผลรวม HRC ทุก Feeder ไม่เกิน 125% ของพิกัดกระแสด้านแรงต่ำหม้อแปลง · สายแรงต่ำไม่เกิน 95 ตร.มม.',
+    'กระแส: 1 เฟส I = S / 230 · 3 เฟส I = S / (1.732 × 400)',
+    'FSD (0409A / 0409B): ใช้ในชุมชนหนาแน่น หมู่บ้านจัดสรร จุดที่มีข้อร้องเรียน ไฟดับจากสัตว์ หรือต้องการความสวยงาม']},
+  {grp:'การต่อลงดิน', title:'การต่อลงดิน (แรงต่ำ)', ref:'Assy. No. 9701A / 9703A / 9704A', desc:'นิวทรัลลงดิน ค่าความต้านทาน ระยะ', points:[
+    'ต่อนิวทรัลลงดินที่ตำแหน่งกับดักเสิร์จแรงต่ำ ยกเว้นต้นหม้อแปลง ให้ลงดินที่เสาถัดไปห่าง ≥ 20 ม.',
+    'ค่าความต้านทานดินรวมของนิวทรัลแรงต่ำต่อหม้อแปลง 1 เครื่อง ไม่เกิน 2 โอห์ม',
+    'พื้นที่ฟ้าผ่ารุนแรง ต่อลงดินทุกระยะไม่เกิน 100 ม.',
+    'ต้นนั่งร้านที่มีกับดักเสิร์จแรงต่ำ ให้แยกสายนิวทรัลห่างออกไป 20 ม.',
+    'เชื่อมสายดินด้วยความร้อน · ห้ามใช้สายหุ้มฉนวนแรงต่ำเป็นสายดิน · ต้องต่อสายดินตู้มิเตอร์',
+    'เลือกแบบกราวด์ใช้เครื่องคำนวณ "เลือกแบบการต่อลงดิน" (ตัวอย่างในเล่ม: 26.6 Ω → 69.81 Ω-m)']},
+  // ไฟสาธารณะ
+  {grp:'ไฟสาธารณะ', title:'การติดตั้งสวิตช์เวลาและมิเตอร์ไฟถนน', ref:'Assy. No. 0810', desc:'Time switch บนเสาหม้อแปลง / เสาแรงต่ำ', points:[
+    'แบบ A บนเสาหม้อแปลง 1 เฟส · แบบ B บนเสาหม้อแปลง 3 เฟส (นั่งร้าน) · แบบ C บนเสาในระบบแรงต่ำ (แบบเลขที่ SAI-015/26009 รวม 6 แผ่น)',
+    'Time switch แบบติดภายนอก เช่น Horstmann 30 A, Tork 40 A — สายเข้า 30 A ใช้ 10–16 ตร.มม. · 40 A ใช้ 16–25 ตร.มม.',
+    'ใช้สายทองแดงหุ้ม PVC 750 V 75 °C แกนเดี่ยว · Time switch ยี่ห้อ Tork ให้ต่อด้วยหางปลาทองแดง',
+    'มิเตอร์ 1 เฟส 2 สาย 220 V 20(40) A ชนิดกันน้ำ ติดบนแผ่นไม้รอง 60×20×2 ซม.',
+    'กรณีตั้งหม้อแปลงเฉพาะไฟถนน ให้ติด LT fuse switch ที่ต้นหม้อแปลงเพื่อป้องกันวงจรไฟถนน',
+    'จำนวนโคม ขนาด Time switch และฟิวส์ ดูแบบ SAI-015/23039 (Assy. No. 0807)']},
+  {grp:'ไฟสาธารณะ', title:'ชุดวัสดุไฟสาธารณะ (SL) ในโปรแกรมประมาณการ', ref:'โปรแกรมประมาณการ งาน SL', desc:'ตัวอย่างคีย์วัสดุ 1 ชุด / 2 ชุด',
+    imgs:[['ตัวอย่าง 1 ชุด','sl-set1.jpg'],['ตัวอย่าง 2 ชุด','sl-set2.jpg']], points:[
+    'Photo electric control 1 เฟส 220 V 30 A',
+    'L.T. fuse switch 1×400 A 500 V และ HRC fuse 32–36 A',
+    'Lightning arrester 250–500 V 2.5–5 kA',
+    'Cable lug (NEMA hole, compression) 35 ตร.มม. และ Clevis สำหรับติดตั้ง',
+    'ดูจำนวนต่อชุดจากรูปตัวอย่าง 1 ชุด / 2 ชุด']},
+];
+const STD_GROUPS = ['แรงสูง', 'แรงต่ำ', 'การต่อลงดิน', 'ไฟสาธารณะ'];
+const STAR = '★ ติดดาว'; // ปุ่มกรองพิเศษ: หัวข้อที่ผู้ใช้ติดดาว
+// ดาวเก็บในเครื่อง (localStorage) เป็นชื่อหัวข้อ · ครั้งแรกใช้ star:true ในข้อมูลเป็นค่าเริ่มต้น
+// ponytail: เก็บรายเครื่อง ถ้ามีล็อกอิน Supabase ค่อยย้ายไปเก็บรายบุคคล
+let myStars;
+try { const raw = localStorage.getItem('pea-stars'); myStars = raw ? new Set(JSON.parse(raw)) : null; } catch { myStars = null; }
+const isStar = s => (myStars || new Set(STANDARDS.filter(x => x.star).map(x => x.title))).has(s.title);
+function toggleStar(s) {
+  if (!myStars) myStars = new Set(STANDARDS.filter(x => x.star).map(x => x.title));
+  myStars.has(s.title) ? myStars.delete(s.title) : myStars.add(s.title);
+  try { localStorage.setItem('pea-stars', JSON.stringify([...myStars])); } catch {}
+}
+const inGroup = (s, g) => g === STAR ? isStar(s) : s.grp === g;
+
+let DOCS = [ // ห้องสมุด: ไฟล์ต้นฉบับใน Google Drive ของเต้ (c = หมวด, mb = ขนาด)
+  {c:'มาตรฐานก่อสร้าง', t:'คู่มือตรวจมาตรฐานงานก่อสร้างและปรับปรุงระบบจำหน่าย', id:'11O7_kb5EV6GJ9y6tPES3icJcTi8c_PHs', mb:143.3},
+  {c:'มาตรฐานก่อสร้าง', t:'มาตรฐานระบบจำหน่ายแรงต่ำ (แก้ไข 2569)', id:'1tbhn5yzFY2MM18K-PFPD76HubvrCTtwn', mb:17.1},
+  {c:'มาตรฐานก่อสร้าง', t:'มาตรฐานงานก่อสร้าง (ตรวจสอบ)', id:'1RQj5TJHB5M9ITdCsB_j2Ozy-2ir-wMfU', mb:56.7},
+  {c:'มาตรฐานก่อสร้าง', t:'ตัวอย่างมาตรฐานงานก่อสร้างที่เจอบ่อย', id:'1c45gNhtw19cQfUqVFcxDRElXZXztn-Ed', mb:11.6},
+  {c:'มาตรฐานก่อสร้าง', t:'แนวทางการตรวจมาตรฐานงานก่อสร้างในพื้นที่', id:'14s92671XL8Erq49tEBvw8j15Mv4oLjMi', mb:3.4},
+  {c:'มาตรฐานก่อสร้าง', t:'คู่มืออุปกรณ์ไฟฟ้าสำหรับก่อสร้างระบบจำหน่าย', id:'1TrNsWNh6JxCgBUXTVdUe35y15JRfUKHU', mb:20.8},
+  {c:'มาตรฐานก่อสร้าง', t:'มาตรฐานติดตั้งมิเตอร์ไฟถนนและไฟสาธารณะ (Assy 0810)', id:'1g4b2PClj48VI594_JUCB1HSkB2KfTAcy', mb:3.9},
+  {c:'มาตรฐานก่อสร้าง', t:'แบบมาตรฐานหัวเสา DDE', id:'1meEqm0n9Ig2oB_xr2-An3qwh9Lkx_okg', mb:6.2},
+  {c:'มาตรฐานก่อสร้าง', t:'ระบบต่อลงดิน', id:'1mlf9BTGh94BklLIVmyHAoPeZ1Lx8djIF', mb:7.8},
+  {c:'มาตรฐานก่อสร้าง', t:'งานบรรยายสาย TAC', id:'1SsSWkKH9n1ZlyEj-We9bL80HnYL8hs10', mb:8.9},
+  {c:'มาตรฐานก่อสร้าง', t:'ตัวอย่างการตรวจมาตรฐาน', id:'1xRPoA62yK_NjU36UIIZudUCFKk2CWyTs', mb:5},
+  {c:'มาตรฐานก่อสร้าง', t:'คู่มือการออกแบบและติดตั้งระบบไฟฟ้า', id:'1REj-moQiyA2f_di1p7gumpjsF75HjX9t', mb:20.6},
+  {c:'มาตรฐาน วสท.', t:'มาตรฐานการติดตั้งทางไฟฟ้า วสท. 2564', id:'1UciDuMBOejiNJJ_KSbd92sUbPVF_Mbka', mb:33.5},
+  {c:'มาตรฐาน วสท.', t:'มาตรฐาน วสท. 2556 (ฉบับเพื่อการศึกษา)', id:'1XL8BZITaDtbYkEu3-C88M4gjXwDzOu5S', mb:8},
+  {c:'มาตรฐาน วสท.', t:'หนังสือสรุปมาตรฐานไฟฟ้า 64 (ตัวอย่าง)', id:'1a78GGUZJHK2a5AyYThfXWq8VTw7RfTw4', mb:3},
+  {c:'มาตรฐาน วสท.', t:'มาตรฐาน วสท. ระบบโซลาร์เซลล์ 2565', id:'14xT8IEggXcxpOltp3SC-CjbHIyBL09DW', mb:2.8},
+  {c:'หม้อแปลง', t:'ระเบียบหม้อแปลง 2568', id:'1FnFTlNt_1ulg56ePVS7iRa1jJIq49Ied', mb:39},
+  {c:'หม้อแปลง', t:'หลักเกณฑ์และวิธีปฏิบัติเกี่ยวกับหม้อแปลง', id:'1YMKjDMbuITQ8I0ewQEpb_hTtZoi4ZIfE', mb:45.5},
+  {c:'หม้อแปลง', t:'หลักเกณฑ์และวิธีปฏิบัติเกี่ยวกับหม้อแปลง 2557', id:'1_zZAQRajBPXzpTmvgVz_RtFbxwEiDKU0', mb:5.4},
+  {c:'หม้อแปลง', t:'คู่มือปฏิบัติงานบำรุงรักษาหม้อแปลง', id:'1Y29U-F01hpniTom1-VLq0juDOVafDl7-', mb:22.8},
+  {c:'หม้อแปลง', t:'แบบฟอร์มตรวจสอบมาตรฐานการติดตั้งหม้อแปลง', id:'1Axrcz-pFaIVGWbNK-yK6sXmFw4QchWJ6', mb:20.5},
+  {c:'หม้อแปลง', t:'ระเบียบจ้างเหมาบำรุงรักษาหม้อแปลง', id:'1dIGwQLRSI3bq1JDGzG_sPbjVzKTODmz5', mb:0.5},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'ระเบียบงานก่อสร้าง', id:'1vE8uFIuGr9_8rclNYInhD1-9F28iMvPV', mb:17.4},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'ระเบียบว่าด้วยการใช้ไฟฟ้าและการบริการ 2562', id:'1fiuoAqqqgfm2skdDOzkY6fvUDLdDw9E3', mb:1.2},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'ระเบียบ กฟภ. 2559', id:'1S42_Zfjj48d4CdiBgNki82m69QRwGsmo', mb:4.2},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'หลักเกณฑ์งานขยายเขตแรงสูง-แรงต่ำ (กคก.292-2563)', id:'11c3DYbYmu869QUGgL2KWql9GenePyuSc', mb:0.8},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'มาตรฐานคุณภาพบริการ กฟภ.', id:'1swJptO8DpFprQn69OD5lDHJWfojkGi4N', mb:2.2},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'ระเบียบละเมิดทรัพย์สินระบบไฟฟ้า 2563', id:'1Gw7zsThadPh4iCSud2azXpSM_KM0Pudp', mb:10.3},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'ระเบียบการตรวจสอบมิเตอร์ 2559', id:'1FFEjcFyBIsAnf_-Giux3JUaJZQq2jW5P', mb:75.7},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'หลักเกณฑ์คิดค่าฉนวนครอบสาย', id:'1rnJfMVNjJwJBERPdgWBZLTWzktixF-Ja', mb:3.8},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'หลักเกณฑ์คิดค่าบริการ Hotline', id:'1Ckwb3lNOk1OC0VSG0UmT7NSMvVMxsSqj', mb:0.1},
+  {c:'ระเบียบ / หลักเกณฑ์', t:'ระเบียบ กฟภ. ว่าด้วยธุรกิจเสริม 2567', id:'1-3G8tc115vZZ8ZnYJxvKmVASivcLKWd-', mb:0.9},
+  {c:'EV / Solar', t:'มาตรฐานการติดตั้งระบบอัดประจุ (EV) ของ PEA', id:'1p5x5Dap-HFqPDV7FL4_0mTC19z_WB630', mb:4.4},
+  {c:'EV / Solar', t:'EV Charging Installation Standard (9807)', id:'1O5wHQbv2arpQ_DtaOeUyd5yZkwRSTMdv', mb:6.8},
+  {c:'EV / Solar', t:'ระเบียบติดตั้ง EV', id:'1H0sQFsncBRhAyXexpqCYRSE42GQk2MY5', mb:6.8},
+  {c:'EV / Solar', t:'บรรยายการตรวจสอบมาตรฐานสถานอัดประจุ', id:'1MffOLLMNSgcAxG1H3C6hpg8sOZ02Y_Y0', mb:8.1},
+  {c:'EV / Solar', t:'Checklist EV Charger (LV)', id:'1W8vjgamV_8_MUoz_6H4cJazxiItMzgmy', mb:0.2},
+  {c:'EV / Solar', t:'Checklist EV Charger (HV)', id:'1f7U9P6cFtuC8JJ1SvUgtiscGeDS4W3E3', mb:0.3},
+  {c:'EV / Solar', t:'Checklist EV Charger (HV to MDB)', id:'18e6EzzUeW6vs6GRrJh5M021FnI7Gy2c2', mb:0.4},
+  {c:'EV / Solar', t:'แบบติดตั้งมาตรฐาน Solar Rooftop', id:'1Xbcoby25BTaswn3cJH4BoXBDTG3ynUYD', mb:1.7},
+  {c:'EV / Solar', t:'หลักเกณฑ์ Solar 2566', id:'19b2UA-0VgIY9G1rXvFkItuze99mHbVzH', mb:2.6},
+  {c:'EV / Solar', t:'ระเบียบการขนานระบบผลิตไฟฟ้า (COD)', id:'1BSZ98lZ5NrtnBie69gKmOotd_-WzLBSu', mb:15.4},
+  {c:'EV / Solar', t:'หลักเกณฑ์ GECC 2567', id:'1hGge2DnZNzH2LeFQEo62QEF1KhMEW156', mb:0.6},
+  {c:'คู่มือปฏิบัติงาน', t:'คู่มือ CO-PS (Coordination) ปี 60', id:'1A64tb7Qh17d-80a-IF-fW0jTLYSchBzR', mb:4.9},
+  {c:'คู่มือปฏิบัติงาน', t:'E-book CO-PS 2023', id:'1LaLOKNIVXIZ7x4AF0jUUm8uUTtvj8Ycv', mb:22.7},
+  {c:'คู่มือปฏิบัติงาน', t:'คู่มือเคลียร์จุดเสี่ยงด้วย PEA Riskmap 2569', id:'10WLYk38R497LxRGC5cHrhog1yeBmrL92', mb:4},
+  {c:'คู่มือปฏิบัติงาน', t:'ชี้แจงการใช้งาน PEA Risk งานบำรุงรักษา', id:'1cLGBXsRMkXILqbw6YzZNRK_lc7-8yZjw', mb:20.7},
+  {c:'คู่มือปฏิบัติงาน', t:'คู่มือการประมาณการงานก่อสร้างระบบจำหน่าย', id:'1AjBnVFB-qj6SQHc2t0snloOYcL78-mk3', mb:3.7},
+  {c:'คู่มือปฏิบัติงาน', t:'คู่มือ CSAS 2568', id:'1C1Nu_0Wyso_rOk5d133HmKQsALO2WWtt', mb:3.8},
+  {c:'แบบฟอร์มตรวจ', t:'แบบฟอร์มตรวจมาตรฐานผู้ใช้ไฟ 2562', id:'1yFJBvD0ZLMUjLorTdeXvnsRc7xxec05T', mb:0.2},
+  {c:'แบบฟอร์มตรวจ', t:'Checklist ตรวจบ้านอยู่อาศัย', id:'1I98JbAFimQKcEhJWpqSnamiU8ouWmUiR', mb:0.2},
+  {c:'แบบฟอร์มตรวจ', t:'Checklist ตรวจอาคารชุด', id:'1-NSxDaguvGheRHrKHnZBb-MTdQIqfM5d', mb:0.2},
+  {c:'แบบฟอร์มตรวจ', t:'แบบฟอร์มสอบมาตรฐาน FM.กมฟ.ผมท.01', id:'1NHHR71r4PPT2hiGfJLg18X-J2k5VB8dj', mb:0.2},
+  {c:'แบบฟอร์มตรวจ', t:'อนุมัติแนวทางปฏิบัติงานตรวจสอบมาตรฐาน (422-2567)', id:'1S_ovXECmBqp40I3QEWeeVvbR_qGDutGE', mb:1},
+];
+const DOC_CATS = ['มาตรฐานก่อสร้าง', 'มาตรฐาน วสท.', 'หม้อแปลง', 'ระเบียบ / หลักเกณฑ์', 'EV / Solar', 'คู่มือปฏิบัติงาน', 'แบบฟอร์มตรวจ'];
+
+const POLE_DEPTH = { // Assy. No. 8201 [ดินแข็งปานกลาง, ดินแข็งมาก, หิน] (ม.)
+  '8.00':[1.5,1.1,0.7], '9.00':[1.5,1.2,0.8], '12.00':[2.0,1.5,1.0], '12.20':[2.2,1.9,1.4],
+  '14.00':[2.0,1.7,1.2], '14.30':[2.3,2.0,1.5], '16.00':[2.2,1.9,1.4],
+};
+const TR_TABLE = [ // kVA, I(A), 125%(A), ค่าปรับตั้ง AT, AF, kA
+  [50,72,90,'80',100,10],[100,144,180,'160',200,10],[160,230,288,'250',315,10],[250,361,451,'400',500,18],
+  [315,454,568,'500–550',630,18],[400,577,721,'600–700',800,18],[500,722,903,'800–900',1000,22],
+  [630,909,1136,'1,000–1,100',1250,30],[800,1155,1443,'1,250–1,400',1600,25],[1000,1443,1804,'1,500–1,800',2000,30],
+];
+
+const HEAD_GROUPS = ['ทางตรง', 'ทางโค้ง', 'ปลายสาย', 'เคเบิลอากาศ', 'ภาพหน้างาน'];
+const HEADS = [ // ชุดหัวเสา จาก Drive "รูปประกอบหัวเสาแรงสูง" · รูปที่ img/<file> · g = กลุ่มใน HEAD_GROUPS
+  {g:'ทางตรง', code:'SP', file:'head-sp.png', desc:'C Insulator · ทางตรง 0–5 องศา'},
+  {g:'ทางตรง', code:'SP.AL', file:'head-sp-al.png', desc:'Single Pin Alley · ห้าวแขน ทางตรง 0–5 องศา'},
+  {g:'ทางโค้ง', code:'DP', file:'head-dp.png', desc:'Double Pin Insulator · ทางโค้ง 5–30 องศา'},
+  {g:'ทางโค้ง', code:'DP.AL', file:'head-dp-al.png', desc:'Double Pin Alley · ห้าวแขน 5–30 องศา'},
+  {g:'ปลายสาย', code:'DE', file:'head-de.png', desc:'Dead End · เข้าปลายสาย'},
+  {g:'ปลายสาย', code:'DDE', file:'head-dde.png', desc:'Double Dead End · เข้าปลายสายสองข้าง'},
+  {g:'ปลายสาย', code:'DDE.AL', file:'head-dde-al.png', desc:'Double Dead End Alley · ห้าวแขนเข้าปลายสายสองข้าง'},
+  {g:'เคเบิลอากาศ', code:'CCB', file:'head-ccb.png', desc:'Corner Bracket (คอนเหล็ก ป.ปลา) · ตรง 0–2° โค้ง 2–30°'},
+  {g:'เคเบิลอากาศ', code:'CCB/BA', file:'head-ccb-ba.png', desc:'Corner Bracket / Buck Arm · ต้นทางแยก'},
+  {g:'เคเบิลอากาศ', code:'CTB', file:'head-ctb.png', desc:'Tangent Bracket (คอนเหล็ก สระอา) · ตรง 0–2° โค้ง >2–5°'},
+  {g:'เคเบิลอากาศ', code:'CSC', file:'head-csc.png', desc:'Cable Spacer + X-Arm 2.50 ม. · ตรง 0–2° โค้ง >2–30°'},
+  {g:'ภาพหน้างาน', code:'CCB/BA.AL · DDE/2DDE', file:'head-ccb-ba-al.png', desc:'ภาพหน้างานจริง'},
+  {g:'ภาพหน้างาน', code:'DDE.BL/DF', file:'head-dde-bl-df.png', desc:'ภาพหน้างานจริง · DDE.BL/DF/CT,PT'},
+  {g:'ภาพหน้างาน', code:'DE/BA · DES.AL', file:'head-de-ba.png', desc:'ภาพหน้างานจริง · DES.AL/DES.AL'},
+  {g:'ภาพหน้างาน', code:'SP/CSC · DE/DES', file:'head-sp-csc.png', desc:'ภาพหน้างานจริง'},
+];
+
+// ===== helpers =====
+const $ = s => document.querySelector(s);
+const fmt = (n, d = 2) => Number.isFinite(n) ? n.toLocaleString('th-TH', {minimumFractionDigits:d, maximumFractionDigits:d}) : '–';
+const num = id => parseFloat($('#' + id).value) || 0;
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function countTo(el, to, d = 2) { // ตัวเลขวิ่ง
+  const from = parseFloat(el.dataset.v || 0); el.dataset.v = to;
+  if (reduceMotion || !Number.isFinite(to)) { el.textContent = fmt(to, d); return; }
+  const t0 = performance.now();
+  const step = t => { const k = Math.min(1, (t - t0) / 400), e = 1 - (1 - k) ** 3;
+    el.textContent = fmt(from + (to - from) * e, d); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+const field = (id, label, attrs = '') => `<label class="f">${label}<input id="${id}" inputmode="decimal" ${attrs}></label>`;
+const select = (id, label, opts) => `<label class="f">${label}<select id="${id}">${opts}</select></label>`;
+const pill = (txt, color) => `<span class="pill" style="background:var(--${color})">${txt}</span>`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const I = { // ไอคอน SVG
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  scale:'<path d="M12 3v18M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/>',
+  tr:'<rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V3M15 7V3M9 12h6M9 16h6"/>',
+  spool:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6"/>',
+  ground:'<path d="M12 3v9M5 12h14M8 16h8M10.5 20h3"/>',
+  box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
+  pole:'<path d="M12 2v20M6 6h12M8 6v3M16 6v3M9 22h6"/>',
+  book:'<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/>',
+  img:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 17-5-5-9 8"/>',
+};
+const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
+// ปุ่มดูแบบ — ดึงเลข Assy จากข้อความอ้างอิง รูปอยู่ที่ img/assy-<เลข>.jpg
+const assyChips = (ref, imgs = []) => {
+  const nos = String(ref || '').match(/\b\d{4}[A-Z]?\b/g) || [];
+  return `<div class="chips">อ้างอิง ${esc(ref)} ${nos.map(n => `<button class="chip" data-assy="${n}">${icon('img')}ดูแบบ ${n}</button>`).join('')}${
+    imgs.map(([label, file]) => `<button class="chip" data-img="${esc(file)}" data-label="${esc(label)}">${icon('img')}${esc(label)}</button>`).join('')}</div>`;
+};
+function openImg(title, file) {
+  const img = $('#lbimg');
+  $('#lbt').textContent = title;
+  img.hidden = false; $('#lbmsg').hidden = true; img.classList.remove('zoom');
+  img.onerror = () => { img.hidden = true; $('#lbmsg').hidden = false; };
+  img.src = IMG_BASE + file;
+  lb.showModal();
+}
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-assy]'); if (c) openImg('Assy. No. ' + c.dataset.assy, `assy-${c.dataset.assy}.jpg`);
+  const m = e.target.closest('[data-img]'); if (m) openImg(m.dataset.label, m.dataset.img);
+});
+
+// ===== เครื่องคำนวณ =====
+const TOOLS = [
+{ id:'bill', icon:'bolt', title:'คำนวณค่าไฟบ้าน', desc:'อัตราก้าวหน้า 1.1.1 / 1.1.2 รวม Ft และ VAT', kw:'ค่าไฟ บิล หน่วย ft vat',
+  html:() => `<div class="fields">
+    ${field('u','จำนวนหน่วย (kWh)','value="200"')}
+    ${select('t','ประเภท','<option value="1.1.2">1.1.2 ใช้เกิน 150 หน่วย/เดือน</option><option value="1.1.1">1.1.1 ไม่เกิน 150 หน่วย/เดือน</option>')}
+    ${field('ft','ค่า Ft (บาท/หน่วย)','value="0.1972" step="0.0001"')}</div>
+    <div class="result"><div class="big"><span id="r">0</span> <small>บาท</small></div>
+    <div class="rows"><div><span>ค่าพลังงานไฟฟ้า</span><b id="e"></b></div><div><span>ค่าบริการ</span><b id="s"></b></div>
+    <div><span>ค่า Ft</span><b id="f"></b></div><div><span>VAT 7%</span><b id="v"></b></div></div></div>
+    <p class="note">⚠ ค่า Ft เปลี่ยนทุก 4 เดือน — แก้ให้ตรงงวดปัจจุบันก่อนใช้ · ประเภท 1.1.1 ใช้กับผู้ที่ใช้ไม่เกิน 150 หน่วยติดต่อกัน 3 เดือน</p>`,
+  run() { const r = calc.bill(num('u'), $('#t').value, num('ft'));
+    countTo($('#r'), r.total); $('#e').textContent = fmt(r.energy); $('#s').textContent = fmt(r.service);
+    $('#f').textContent = fmt(r.ftCost); $('#v').textContent = fmt(r.vat); } },
+
+{ id:'unb', icon:'scale', title:'โหลดไม่สมดุล (Unbalance)', desc:'% Unbalance กระแสนิวทรัล และแนะนำการย้ายโหลด', kw:'unbalance ไม่สมดุล เฟส นิวทรัล หม้อแปลง',
+  html:() => `<div class="fields">${field('a','กระแสเฟส A (A)','value="180"')}${field('b','กระแสเฟส B (A)','value="120"')}${field('c','กระแสเฟส C (A)','value="95"')}${field('lim','เกณฑ์ที่ยอมรับ (%)','value="20"')}</div>
+    <div class="result"><div class="bars" id="bars"></div>
+    <div class="big"><span id="p">0</span> <small>% Unbalance</small> <span id="st"></span></div>
+    <div class="rows"><div><span>กระแสเฉลี่ย</span><b id="avg"></b></div><div><span>กระแสนิวทรัล (ประมาณ)</span><b id="n"></b></div></div>
+    <p id="adv" style="margin:12px 0 0"></p></div>
+    <p class="note">% Unbalance = ผลต่างสูงสุดจากค่าเฉลี่ย ÷ ค่าเฉลี่ย × 100 · กระแสนิวทรัลคิดแบบเวกเตอร์ โดยสมมติ PF ทั้ง 3 เฟสเท่ากัน · ปรับเกณฑ์ % ให้ตรงกับที่หน่วยงานใช้</p>`,
+  run() { const v = {A:num('a'), B:num('b'), C:num('c')}, r = calc.unbalance(v.A, v.B, v.C), lim = num('lim');
+    const ks = Object.keys(v), mx = Math.max(...Object.values(v)) || 1;
+    const hi = ks.reduce((x,y) => v[x] >= v[y] ? x : y), lo = ks.reduce((x,y) => v[x] <= v[y] ? x : y);
+    $('#bars').innerHTML = ks.map(k => `<div class="bar"><b>${fmt(v[k],0)}</b><i class="${k===hi&&r.pct>lim?'max':''}" style="height:0"></i>เฟส ${k}</div>`).join('');
+    requestAnimationFrame(() => document.querySelectorAll('.bar i').forEach((el,i) => el.style.height = (v[ks[i]] / mx * 100) + '%'));
+    countTo($('#p'), r.pct, 1); $('#avg').textContent = fmt(r.avg,1) + ' A'; $('#n').textContent = fmt(r.inN,1) + ' A';
+    const ok = r.pct <= lim; $('#st').innerHTML = pill(ok ? 'ผ่านเกณฑ์' : 'เกินเกณฑ์', ok ? 'ok' : 'bad');
+    const move = Math.min(v[hi] - r.avg, r.avg - v[lo]);
+    $('#adv').innerHTML = ok ? 'โหลดอยู่ในเกณฑ์ ไม่ต้องย้าย' : `แนะนำ: ย้ายโหลดประมาณ <b>${fmt(move,0)} A</b> จาก <b>เฟส ${hi}</b> ไป <b>เฟส ${lo}</b>`; } },
+
+{ id:'tr', icon:'tr', title:'กระแสหม้อแปลง & CB', desc:'กระแส HV/LV และค่าปรับตั้งเซอร์กิตเบรกเกอร์', kw:'หม้อแปลง transformer kva breaker cb กระแส',
+  html:() => `<div class="fields">${select('kva','ขนาดหม้อแปลง 3 เฟส (kVA)', TR_TABLE.map(r => `<option ${r[0]===100?'selected':''}>${r[0]}</option>`).join(''))}
+    ${select('hv','แรงดันด้านแรงสูง','<option value="22000">22 kV</option><option value="33000">33 kV</option>')}</div>
+    <div class="result"><div class="big"><span id="ilv">0</span> <small>A ด้านแรงต่ำ (400 V)</small></div>
+    <div class="rows"><div><span>กระแสด้านแรงสูง</span><b id="ihv"></b></div><div><span>ช่วงปรับตั้ง CB (1.0–1.25 เท่า)</span><b id="rng"></b></div></div>
+    <div class="scroll"><table><thead><tr><th>kVA</th><th>I (A)</th><th>125%</th><th>ปรับตั้ง AT</th><th>AF</th><th>kA</th></tr></thead><tbody id="tt"></tbody></table></div></div>
+    <p class="note">สูตรลัด: I แรงต่ำ ≈ 1.44 × kVA · ตารางจากคู่มือ กฟภ. (คิดที่ 400/230 V)</p>`,
+  run() { const k = num('kva'), lv = calc.trCurrent(k, 400);
+    countTo($('#ilv'), lv, 1); $('#ihv').textContent = fmt(calc.trCurrent(k, num('hv')),2) + ' A';
+    $('#rng').textContent = `${fmt(lv,0)} – ${fmt(lv*1.25,0)} A`;
+    $('#tt').innerHTML = TR_TABLE.map(r => `<tr class="${r[0]===k?'hl':''}">${r.map(x => `<td>${typeof x==='number'?x.toLocaleString():x}</td>`).join('')}</tr>`).join(''); } },
+
+{ id:'cable', icon:'spool', title:'คำนวณเศษสาย', desc:'แปลงความยาว ↔ น้ำหนักสาย ตามชนิดสาย', kw:'เศษสาย น้ำหนัก ความยาว สาย cable คืนพัสดุ',
+  html:() => `<div class="fields">${select('cb','ชนิดสาย', CABLES.map(([n,w],i) => `<option value="${i}">${esc(n)} (${w} กก./100ม.)</option>`).join(''))}</div>
+    <div class="fields" style="margin-top:12px">${field('m','ความยาว (เมตร)','value="1350"')}${field('kg','หรือ น้ำหนัก (กก.)','placeholder="กรอกเพื่อหาความยาว"')}</div>
+    <div class="result"><div class="big"><span id="o">0</span> <small id="ou"></small></div></div>`,
+  run(src) { const w = CABLES[$('#cb').value][1];
+    if (src === 'kg' && $('#kg').value) { $('#m').value = ''; countTo($('#o'), calc.cableM(num('kg'), w)); $('#ou').textContent = 'เมตร'; }
+    else if (src === 'cb' && !$('#m').value && $('#kg').value) { countTo($('#o'), calc.cableM(num('kg'), w)); $('#ou').textContent = 'เมตร'; }
+    else { if (src === 'm') $('#kg').value = ''; countTo($('#o'), calc.cableKg(num('m'), w)); $('#ou').textContent = 'กิโลกรัม'; } } },
+
+{ id:'gnd', icon:'ground', ref:'Assy. No. 9706', title:'เลือกแบบการต่อลงดิน', desc:'หาความต้านทานจำเพาะดิน แล้วเลือกแบบ GR/GS/GC', kw:'กราวด์ ground ต่อลงดิน หลักดิน โอห์ม',
+  html:() => `<div class="fields">${field('rb','ค่าความต้านทานดินที่วัดได้ (โอห์ม)','value="34.7"')}
+    ${select('tg','ค่าที่ต้องการ','<option value="5">5 โอห์ม</option><option value="10">10 โอห์ม</option><option value="25">25 โอห์ม (พื้นที่ยาก)</option>')}</div>
+    <div class="result"><div class="big"><span id="gt">–</span> <small>แบบการต่อลงดิน</small></div>
+    <div class="rows"><div><span>ความต้านทานจำเพาะดิน</span><b id="rho"></b></div></div></div>
+    <p class="note">ความต้านทานจำเพาะดิน = ค่าที่วัดได้ ÷ 0.381 (สมมติกราวด์เดิมเป็นแบบ GR-1 หลักเดียว) · ตาราง Assy. No. 9706</p>`,
+  run() { const r = calc.ground(num('rb'), $('#tg').value);
+    $('#gt').textContent = r.type || 'เกินตาราง'; $('#rho').textContent = fmt(r.rho) + ' โอห์ม-เมตร'; } },
+
+{ id:'depth', icon:'pole', ref:'Assy. No. 8201', title:'ความลึกปักเสา', desc:'ความลึกจากระดับดินตามขนาดเสาและสภาพดิน', kw:'ปักเสา ความลึก เสา ดิน หิน 8201',
+  html:() => `<div class="fields">${select('ps','ขนาดเสา (ม.)', Object.keys(POLE_DEPTH).map(k => `<option ${k==='12.20'?'selected':''}>${k}</option>`).join(''))}
+    ${select('soil','สภาพดิน','<option value="0">ดินแข็งปานกลาง</option><option value="1">ดินแข็งมาก</option><option value="2">หิน</option>')}</div>
+    <div class="result"><div class="big"><span id="dp">0</span> <small>เมตร</small></div></div>
+    <p class="note">Assy. No. 8201 · เสาเอียงได้ไม่เกิน 5 องศา · ดินอ่อน/ดินเลนให้ดูหมวดมาตรฐาน "การปักเสา"</p>`,
+  run() { countTo($('#dp'), POLE_DEPTH[$('#ps').value][+$('#soil').value]); } },
+
+{ id:'mat', icon:'box', title:'รหัสพัสดุ เดิม → ใหม่', desc:'ค้นรหัสพัสดุที่เปลี่ยนสเปค ได้รหัสใหม่ทันที', kw:'รหัสพัสดุ พัสดุ สเปค fuse ฟิวส์ sleeve dead-end tape clamp',
+  html:() => `<div class="fields"><label class="f">พิมพ์รหัสเดิม/ใหม่ หรือชื่อพัสดุ<input id="mq" placeholder="เช่น 1040020000 หรือ fuse"></label></div>
+    <div class="result"><div class="scroll"><table><thead><tr><th>เดิม</th><th>ใหม่</th><th>เริ่มใช้</th></tr></thead><tbody id="mt"></tbody></table></div></div>
+    <p class="note">ที่มา: "รายการพัสดุที่มีการจัดสเปคใหม่หรือปรับปรุงสเปคใหม่เพื่อใช้แทนพัสดุเดิม" (รูปใน Drive) · "–" = พัสดุสร้างใหม่ ไม่มีรหัสเดิม</p>`,
+  run() { const q = $('#mq').value.trim().toLowerCase();
+    const rows = MAT_CODES.filter(r => !q || r.join(' ').toLowerCase().includes(q));
+    const cell = (code, name, b) => `<td style="white-space:normal;text-align:left">${b ? `<b>${esc(code)}</b>` : esc(code)}<br><small>${esc(name)}</small></td>`;
+    $('#mt').innerHTML = rows.map(r => `<tr>${cell(r[0], r[1])}${cell(r[2], r[3], 1)}<td>${esc(r[4])}</td></tr>`).join('') || '<tr><td colspan="3">ไม่พบ</td></tr>'; } },
+];
+// รหัสพัสดุ [รหัสเดิม, รายการเดิม, รหัสใหม่, รายการใหม่, เริ่มใช้] — จากรูป S__7438341 / S__7438343 ใน Drive
+const MAT_CODES = [
+['1040020000','H.R.C. FUSE 32-36 A DIN OR BS','1040020010','H.R.C. FUSE, BLADE CONTACT, 32 A','1 เม.ย. 2565'],
+['1040020001','H.R.C. FUSE 50 A DIN OR BS','1040020011','H.R.C. FUSE, BLADE CONTACT, 50 A','1 เม.ย. 2565'],
+['1040020002','H.R.C. FUSE 80 A DIN OR BS','1040020012','H.R.C. FUSE, BLADE CONTACT, 80 A','1 เม.ย. 2565'],
+['1040020003','H.R.C. FUSE 100 A DIN OR BS','1040020013','H.R.C. FUSE, BLADE CONTACT, 100 A','1 เม.ย. 2565'],
+['1040020004','H.R.C. FUSE 150-160 A DIN OR BS','1040020014','H.R.C. FUSE, BLADE CONTACT, 160 A','1 เม.ย. 2565'],
+['1040020005','H.R.C. FUSE 200 A DIN OR BS','1040020015','H.R.C. FUSE, BLADE CONTACT, 200 A','1 เม.ย. 2565'],
+['1040020006','H.R.C. FUSE 250 A DIN OR BS','1040020016','H.R.C. FUSE, BLADE CONTACT, 250 A','1 เม.ย. 2565'],
+['1040020007','H.R.C. FUSE 300-315 A DIN OR BS','1040020017','H.R.C. FUSE, BLADE CONTACT, 315 A','1 เม.ย. 2565'],
+['1040020009','H.R.C. FUSE 400 A DIN OR BS','1040020019','H.R.C. FUSE, BLADE CONTACT, 400 A','1 เม.ย. 2565'],
+['1020310000','CONNECTOR, D/E, AL 25-35 SQ.MM.','1020260300','PREFORMED D/E, AW 25 SQ.MM.','แผนจัดหาปี 2566'],
+['1020310001','CONNECTOR, D/E, AL 50-70 SQ.MM.','1020260301','PREFORMED D/E, AW 50 SQ.MM.','แผนจัดหาปี 2566'],
+['1020310002','CONNECTOR, D/E, AL 95-120 SQ.MM.','1020260302','PREFORMED D/E, AW 95 SQ.MM.','แผนจัดหาปี 2566'],
+['1020180003','SPLICING TAPE, AERIAL CABLE, 3/4X30\'','1020180008','EPR, HIGH-VOLTAGE INSULATING TAPE','1 ต.ค. 2564'],
+['1030120002','CLAMP, SUSPENSION, FOR AL 400 SQ.MM.','1030120004','SUSPENSION CLAMP, FOR AL 400 SQ.MM. (REVISE)','1 เม.ย. 2564'],
+['1020400002','CONN., SPLICE, TENSION AL 50 SQ.MM.','1020400012','SLEEVE, TENSION AL 50 SQ.MM.','1 มี.ค. 2565'],
+['1020400007','CONN., SPLICE, TENSION AL 50 SQ.MM.','1020400017','SLEEVE, TENSION AL 185 SQ.MM.','1 มี.ค. 2565'], // ponytail: ต้นฉบับเขียน 50 แต่ใหม่เป็น 185 — คงตามต้นฉบับ รอเต้ยืนยัน
+['1020400009','CONN., SPLICE, TENSION AL 400 SQ.MM.','1020400019','SLEEVE, TENSION AL 400 SQ.MM.','1 มี.ค. 2565'],
+['–','–','1020400022','SLEEVE, TENSION COM.AL 50 SQ.MM. (SAC)','1 มี.ค. 2565'],
+['–','–','1020400027','SLEEVE, TENSION COM.AL 185 SQ.MM. (SAC)','1 มี.ค. 2565'],
+['1020410002','CONN., SPLICE, TENSIONLESS AL 50 SQ.MM.','1020410014','SLEEVE, TENSIONLESS AL 50 SQ.MM.','1 มี.ค. 2565'],
+['1020410007','CONN., SPLICE, TENSIONLESS AL 185 SQ.MM.','1020410017','SLEEVE, TENSIONLESS AL 185 SQ.MM.','1 มี.ค. 2565'],
+['1020410009','CONN., SPLICE, TENSIONLESS AL 400 SQ.MM.','1020410019','SLEEVE, TENSIONLESS AL 400 SQ.MM.','1 มี.ค. 2565'],
+['–','–','1020410022','SLEEVE, TENSIONLESS COM.AL 50 SQ.MM. (SAC)','1 มี.ค. 2565'],
+['–','–','1020410027','SLEEVE, TENSIONLESS COM.AL 185 SQ.MM. (SAC)','1 มี.ค. 2565'],
+];
+
+// ===== หน้าแรก =====
+let cat = 'all', hg = 'all', sg = 'all', dc = 'all'; // กลุ่มที่เลือก: หัวเสา / มาตรฐาน / หมวดเอกสาร
+// แถวปุ่มกรองกลุ่ม · attr = ชื่อ data-attribute, count(g) = จำนวนในกลุ่ม
+const subtabs = (attr, groups, sel, count, total) => `<div class="subtabs">${['all', ...groups].map(g =>
+  `<button class="tab" data-${attr}="${g}" aria-selected="${g === sel}">${g === 'all' ? 'ทั้งหมด' : g}<small>${g === 'all' ? total : count(g)}</small></button>`).join('')}</div>`;
+const summary = (i, kind, ico, title, sub, extra = '') => `<button class="card" style="--i:${i}" data-kind="${kind}" ${extra}>
+  ${ico}<b>${title}</b><small>${sub}</small><span class="tag">ดูทั้งหมด →</span></button>`;
+function render(still) { // still === true: วาดใหม่โดยไม่เล่น animation การ์ด (ใช้ตอนกดดาว)
+  $('#list').classList.toggle('still', still === true);
+  const q = $('#q').value.trim().toLowerCase();
+  const hit = t => !q || ((t.title || t.code) + t.desc + (t.g || '') + (t.grp || '') + (t.grp && isStar(t) ? 'ติดดาว เจอบ่อย ใช้บ่อย' : '') + (t.kw || '') + (t.points || []).join(' ')).toLowerCase().includes(q);
+  const card = (t, i, kind, id) => `<button class="card" style="--i:${i}" data-kind="${kind}" data-id="${id}">
+      ${kind === 'std' ? `<span class="star${isStar(t) ? ' on' : ''}" data-star="${id}" role="button" tabindex="0" aria-pressed="${isStar(t)}"
+        aria-label="${isStar(t) ? 'เอาดาวออก' : 'ติดดาว'}" title="${isStar(t) ? 'เอาดาวออก' : 'ติดดาว'}">★</span>` : ''}<span class="ico">${icon(kind === 'calc' ? t.icon : 'book')}</span><b>${esc(t.title)}</b><small>${esc(t.desc)}</small>
+      ${kind === 'std' ? `<span class="tag">${esc(t.ref)}</span>` : ''}</button>`;
+  const show = c => q || cat === 'all' || cat === c; // มีคำค้น = ค้นทุกหมวด
+  const calcs = show('calc') ? TOOLS.filter(hit) : [];
+  const stds = show('std') ? STANDARDS.map((s, j) => [s, j]).filter(([s]) => hit(s)) : [];
+  const heads = show('head') ? HEADS.map((h, j) => [h, j]).filter(([h]) => hit(h)) : [];
+  let i = 0, html = '';
+  if (calcs.length) html += `<h2 class="sec">เครื่องคำนวณ</h2><div class="grid">${calcs.map(t => card(t, i++, 'calc', t.id)).join('')}</div>`;
+  if (cat === 'all' && !q) { // หน้ารวม: มาตรฐานย่อเหลือการ์ดต่อกลุ่ม
+    html += `<h2 class="sec">มาตรฐานก่อสร้าง</h2><div class="grid">${[STAR, ...STD_GROUPS].map(g =>
+      summary(i++, 'goto-std', `<span class="ico">${g === STAR ? '<span class="big-star">★</span>' : icon('book')}</span>`,
+        g === STAR ? 'มาตรฐานที่ติดดาว' : 'มาตรฐาน' + g, STANDARDS.filter(s => inGroup(s, g)).length + ' หัวข้อ', `data-g="${g}"`)).join('')}</div>`;
+  } else if (stds.length) {
+    html += `<h2 class="sec">มาตรฐานก่อสร้าง</h2>`;
+    if (cat === 'std' && !q) html += subtabs('sg', [STAR, ...STD_GROUPS], sg, g => STANDARDS.filter(s => inGroup(s, g)).length, STANDARDS.length);
+    const shown = cat === 'std' && !q && sg !== 'all' ? stds.filter(([s]) => inGroup(s, sg)) : stds;
+    html += STD_GROUPS.map(g => { const list = shown.filter(([s]) => s.grp === g);
+      return list.length ? `<h3 class="grp">${g}</h3><div class="grid">${list.map(([s, j]) => card(s, i++, 'std', j)).join('')}</div>` : ''; }).join('');
+  }
+  const headCard = ([h, j]) => `<button class="card" style="--i:${i++}" data-kind="head" data-id="${j}">
+      <img class="thumb" src="${IMG_BASE + h.file}" alt="" loading="lazy"><b>${esc(h.code)}</b><small>${esc(h.desc)}</small></button>`;
+  const docs = show('doc') ? DOCS.filter(d => !q || (d.t + d.c).toLowerCase().includes(q)) : [];
+  if (cat === 'all' && !q) { // หน้ารวม: หัวเสา + ห้องสมุด ย่อเหลือการ์ดเดียว
+    html += `<h2 class="sec">ชุดหัวเสา · ห้องสมุดเอกสาร</h2><div class="grid">
+      ${summary(i++, 'goto-head', `<img class="thumb" src="${IMG_BASE}head-dde.png" alt="" loading="lazy">`, `ชุดหัวเสา ${HEADS.length} แบบ`, HEAD_GROUPS.join(' · '))}
+      ${summary(i++, 'goto-doc', `<span class="ico">${icon('book')}</span>`, `ห้องสมุดเอกสาร ${DOCS.length} ไฟล์`, DOC_CATS.join(' · '))}</div>`;
+  } else if (heads.length) {
+    html += `<h2 class="sec">ชุดหัวเสาระบบจำหน่าย</h2>`;
+    if (cat === 'head' && !q) html += subtabs('hg', HEAD_GROUPS, hg, g => HEADS.filter(h => h.g === g).length, HEADS.length);
+    const shown = cat === 'head' && !q && hg !== 'all' ? heads.filter(([h]) => h.g === hg) : heads;
+    html += HEAD_GROUPS.map(g => { const list = shown.filter(([h]) => h.g === g);
+      return list.length ? `<h3 class="grp">${g}</h3><div class="grid mini">${list.map(headCard).join('')}</div>` : ''; }).join('');
+  }
+  if (docs.length && !(cat === 'all' && !q)) {
+    html += `<h2 class="sec">ห้องสมุดเอกสาร <small>· เปิดไฟล์ต้นฉบับ${SUPABASE_URL ? '' : 'ใน Google Drive'}</small></h2>`;
+    if (cat === 'doc' && !q) html += subtabs('dc', DOC_CATS, dc, c => DOCS.filter(d => d.c === c).length, DOCS.length);
+    const shown = cat === 'doc' && !q && dc !== 'all' ? docs.filter(d => d.c === dc) : docs;
+    html += DOC_CATS.map(c => { const list = shown.filter(d => d.c === c);
+      return list.length ? `<h3 class="grp">${c}</h3><div class="docs">${list.map(d => `<a class="doc" style="--i:${i++}" href="${DOC_URL(d)}" target="_blank" rel="noopener">
+        ${icon('book')}<span>${esc(d.t)}</span><small>${d.mb} MB</small></a>`).join('')}</div>` : ''; }).join('');
+  }
+  $('#list').innerHTML = html || `<p class="empty">ไม่พบ "${esc(q)}"</p>`;
+}
+function openTool(kind, id) {
+  const t = kind === 'calc' ? TOOLS.find(x => x.id === id) : STANDARDS[id];
+  $('#dtitle').textContent = t.title;
+  if (kind === 'calc') {
+    $('#dbody').innerHTML = t.html() + (t.ref ? assyChips(t.ref) : '');
+    $('#dbody').oninput = $('#dbody').onchange = e => t.run(e.target.id);
+    dlg.showModal(); t.run();
+  } else {
+    $('#dbody').innerHTML = `<button class="star-toggle" data-star-dlg="${id}"></button><ul class="pts">${t.points.map(p => `<li>${esc(p)}</li>`).join('')}</ul>${assyChips(t.ref, t.imgs)}`;
+    paintStarBtn(); dlg.showModal();
+  }
+}
+// ติดดาว: กดดาวบนการ์ด หรือปุ่มในหน้ารายละเอียด
+function starClicked(idx) {
+  toggleStar(STANDARDS[idx]); render(true);
+  document.querySelector(`[data-star="${idx}"]`)?.classList.add('pop');
+}
+function paintStarBtn() {
+  const b = document.querySelector('[data-star-dlg]'); if (!b) return;
+  const on = isStar(STANDARDS[b.dataset.starDlg]);
+  b.setAttribute('aria-pressed', on); b.textContent = on ? '★ ติดดาวแล้ว · กดเพื่อเอาออก' : '☆ ติดดาวไว้ใช้บ่อย';
+}
+$('#dbody').addEventListener('click', e => { const b = e.target.closest('[data-star-dlg]'); if (b) { starClicked(b.dataset.starDlg); paintStarBtn(); } });
+$('#list').addEventListener('keydown', e => { const s = e.target.closest('[data-star]');
+  if (s && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); starClicked(s.dataset.star); document.querySelector(`[data-star="${s.dataset.star}"]`)?.focus(); } });
+$('#list').onclick = e => {
+  const st = e.target.closest('[data-star]'); if (st) { starClicked(st.dataset.star); return; }
+  const sub = e.target.closest('[data-hg],[data-sg],[data-dc]');
+  if (sub) { ({ hg = hg, sg = sg, dc = dc } = sub.dataset); render(); return; }
+  const c = e.target.closest('.card'); if (!c) return;
+  const go = t => document.querySelector(`.tab[data-cat="${t}"]`).click();
+  if (c.dataset.kind === 'goto-head') return go('head');
+  if (c.dataset.kind === 'goto-doc') return go('doc');
+  if (c.dataset.kind === 'goto-std') { sg = c.dataset.g; return go('std'); }
+  if (c.dataset.kind === 'head') { const h = HEADS[c.dataset.id]; openImg('ชุดหัวเสา ' + h.code, h.file); }
+  else openTool(c.dataset.kind, c.dataset.id);
+};
+$('#q').oninput = render;
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
+  cat = b.dataset.cat; document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', x === b)); render(); });
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); }); // แตะนอกกรอบเพื่อปิด
+
+// ===== โหลดจาก Supabase (ถ้าตั้งค่าไว้) — ล้มเหลวก็ใช้ข้อมูลในไฟล์ต่อ (ใช้ออฟไลน์หน้างานได้) =====
+async function loadDb() {
+  if (!SUPABASE_URL) return;
+  const get = path => fetch(`${SUPABASE_URL}/rest/v1/${path}`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } })
+    .then(r => r.ok ? r.json() : Promise.reject(r.status));
+  try {
+    const [c, s, d] = await Promise.all([get('cables?select=name,kg_per_100m&order=sort'),
+      get('standards?select=grp,star,title,ref,description,points,imgs&order=sort'), get('docs?select=c,t,id,mb&order=sort')]);
+    if (c.length) CABLES = c.map(r => [r.name, +r.kg_per_100m]);
+    if (s.length) STANDARDS = s.map(r => ({ grp: r.grp, star: r.star, title: r.title, ref: r.ref, desc: r.description, points: r.points, imgs: r.imgs || [] }));
+    if (d.length) DOCS = d;
+    $('#foot').textContent += ' · ข้อมูลจาก Supabase';
+    render();
+  } catch (err) { console.warn('Supabase โหลดไม่ได้ ใช้ข้อมูลในไฟล์แทน', err); }
+}
+// ===== ลูกเล่นหน้าตา: ตัวเลขสรุป ประกายไฟ แสงตามเมาส์ การ์ดเอียง 3D =====
+function decorate() {
+  const assyCount = new Set([...STANDARDS, ...TOOLS].flatMap(t => String(t.ref || '').match(/\b\d{4}[A-Z]?\b/g) || [])).size;
+  $('#stats').innerHTML = [[TOOLS.length, 'เครื่องคำนวณ'], [STANDARDS.length, 'หัวข้อมาตรฐาน'], [assyCount, 'แบบ Assy'], [HEADS.length, 'ชุดหัวเสา'], [DOCS.length, 'เอกสาร']]
+    .map(([n, l]) => `<div class="stat"><b data-n="${n}">0</b><span>${l}</span></div>`).join('');
+  setTimeout(() => document.querySelectorAll('.stat b').forEach(b => countTo(b, +b.dataset.n, 0)), 300);
+}
+$('#sparks').innerHTML = Array.from({ length: 18 }, () =>
+  `<i style="left:${Math.random() * 100}%;--s:${(.5 + Math.random()).toFixed(2)};animation-duration:${(6 + Math.random() * 6).toFixed(1)}s;animation-delay:-${(Math.random() * 10).toFixed(1)}s"></i>`).join('');
+if (!reduceMotion && matchMedia('(pointer:fine)').matches) {
+  const hero = $('#hero');
+  hero.addEventListener('pointermove', e => { const r = hero.getBoundingClientRect();
+    hero.style.setProperty('--mx', e.clientX - r.left + 'px'); hero.style.setProperty('--my', e.clientY - r.top + 'px'); });
+  $('#list').addEventListener('pointermove', e => { const c = e.target.closest('.card'); if (!c) return; const r = c.getBoundingClientRect();
+    c.style.setProperty('--ry', (((e.clientX - r.left) / r.width - .5) * 10).toFixed(1) + 'deg');
+    c.style.setProperty('--rx', ((.5 - (e.clientY - r.top) / r.height) * 10).toFixed(1) + 'deg'); });
+}
+document.addEventListener('keydown', e => { if (e.key === '/' && document.activeElement !== $('#q') && !dlg.open) { e.preventDefault(); $('#q').focus(); } });
+
+// ===== เครดิตผู้พัฒนา: ชื่อเด้งขึ้นทีละตัว (ตัดตามตัวอักษรไทย สระ/วรรณยุกต์ไม่หลุด) =====
+const DEV = { name: 'นายพชระ ปรีดากรณ์', pos: 'วศก.5 ผปร.กฟส.คช.' };
+function openCredit() {
+  const chars = window.Intl?.Segmenter ? [...new Intl.Segmenter('th', { granularity: 'grapheme' }).segment(DEV.name)].map(s => s.segment) : [...DEV.name];
+  $('#crname').innerHTML = chars.map((c, i) => c === ' ' ? '<span style="--d:' + i + '">&nbsp;</span>' : `<span style="--d:${i}">${esc(c)}</span>`).join('');
+  $('#crpos').textContent = DEV.pos;
+  $('#cr .cr-card').style.setProperty('--pd', (.9 + chars.length * .06).toFixed(2) + 's'); // ตำแหน่งขึ้นหลังชื่อครบ
+  $('#crburst').innerHTML = Array.from({ length: 16 }, (_, i) => `<i style="--a:${i * 22.5}deg;--r:${110 + Math.random() * 60}px"></i>`).join('');
+  cr.showModal();
+}
+cr.addEventListener('click', e => { if (e.target === cr) cr.close(); });
+
+render(); decorate(); loadDb();
+</script>
+</body>
+</html>
